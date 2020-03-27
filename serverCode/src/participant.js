@@ -8,18 +8,21 @@ class Participant {
         this.videoSrc = null;
         this.name = null;
 
-        //  Attach socket event listener    
-        socket.on("close", () => {
-            roomInstance.removeParticipant(socket)
-        })
-        socket.on("message", (message) => {
-            messageObj = JSON.parse(message);
+        this.attachListeners(roomInstance)
+    }
 
+    attachListeners(roomInstance) {
+        this.socket.on("close", () => {
+            roomInstance.removeParticipant(this.socket)
+        })
+        this.socket.on("message", (message) => {
+            const messageObj = JSON.parse(message);
+
+            //  Participant detail updation
             if (messageObj["tag"] == "update") {
-                roomInstance.updateParticipant(socket, messageObj["name"], messageObj["videoSrc"]);
+                roomInstance.updateParticipant(this.socket, messageObj["name"], messageObj["videoSrc"]);
             }
         })
-
     }
 
 }

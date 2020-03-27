@@ -13,13 +13,13 @@ class Room {
     }
 
     addParticipant(socket) {
-        //Add to partialParticipants
+        //  Add to partialParticipants
         var participant = new participantClass(socket, this);
         this.#partialParticipants.push(participant);
     }
 
     updateParticipant(socket, name, videoSrc) {
-        //Update and add to participants
+        //  Update and add to participants
 
         for (let i = 0; i < this.#partialParticipants.length; i++) {
             if (this.#partialParticipants[i].socket == socket) {
@@ -28,13 +28,13 @@ class Room {
 
                 this.#participants.push(this.#partialParticipants[i]);
                 this.#partialParticipants.splice(i, 1);
-                break;
+                return;
             }
         }
     }
 
     removeParticipant(socket) {
-        //Called when socket disconnects
+        //  Called when socket disconnects
 
         for (let i = 0; i < this.#partialParticipants.length; i++) {
             if (this.#partialParticipants[i].socket == socket) {
