@@ -6,4 +6,4 @@ function createResponse(tag, data) {
     return JSON.stringify(response);
 }
 
-export default createResponse;
+module.exports = createResponse;

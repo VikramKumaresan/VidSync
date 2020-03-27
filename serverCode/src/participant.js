@@ -3,12 +3,25 @@ class Participant {
     videoSrc;
     name;
 
-    constructor(socket) {
+    constructor(socket, roomInstance) {
         this.socket = socket;
         this.videoSrc = null;
         this.name = null;
+
+        //  Attach socket event listener    
+        socket.on("close", () => {
+            roomInstance.removeParticipant(socket)
+        })
+        socket.on("message", (message) => {
+            messageObj = JSON.parse(message);
+
+            if (messageObj["tag"] == "update") {
+                roomInstance.updateParticipant(socket, messageObj["name"], messageObj["videoSrc"]);
+            }
+        })
+
     }
 
 }
 
-export default Participant;
+module.exports = Participant;

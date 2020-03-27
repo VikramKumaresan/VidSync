@@ -1,5 +1,5 @@
-import participantClass from "./participant";
-import createResponse from "./utils/createResponse";
+const participantClass = require("./participant");
+const createResponse = require("./utils/createResponse");
 
 class Room {
     #partialParticipants;
@@ -14,7 +14,7 @@ class Room {
 
     addParticipant(socket) {
         //Add to partialParticipants
-        var participant = new participantClass(socket);
+        var participant = new participantClass(socket, this);
         this.#partialParticipants.push(participant);
     }
 
@@ -22,13 +22,31 @@ class Room {
         //Update and add to participants
 
         for (let i = 0; i < this.#partialParticipants.length; i++) {
-            if (this.#partialParticipants[i] == socket) {
+            if (this.#partialParticipants[i].socket == socket) {
                 this.#partialParticipants[i].videoSrc = videoSrc;
                 this.#partialParticipants[i].name = name;
 
                 this.#participants.push(this.#partialParticipants[i]);
                 this.#partialParticipants.splice(i, 1);
                 break;
+            }
+        }
+    }
+
+    removeParticipant(socket) {
+        //Called when socket disconnects
+
+        for (let i = 0; i < this.#partialParticipants.length; i++) {
+            if (this.#partialParticipants[i].socket == socket) {
+                this.#partialParticipants.splice(i, 1);
+                return;
+            }
+        }
+
+        for (let i = 0; i < this.#participants.length; i++) {
+            if (this.#participants[i].socket == socket) {
+                this.#participants.splice(i, 1);
+                return;
             }
         }
     }
@@ -50,4 +68,4 @@ class Room {
     }
 }
 
-export default Room;
+module.exports = Room

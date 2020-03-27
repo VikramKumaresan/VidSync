@@ -1,26 +1,42 @@
 //
 //  Imports
 //
+const express = require('express');
+const app = express();
 
-import express from 'express';
-const app = express()
-import { Server } from 'ws';
-const wss = new Server({ app })
+const http = require("http");
+const server = http.createServer(app)
 
-import config from "./config.json";
+const ws = require('ws');
+const wss = new ws.Server({ server: server });
 
-import roomClass from "./src/room";
+const config = require("./config.json");
+
+const roomClass = require("./src/room");
 const room = new roomClass(wss);
 
 //
 //  WebSocket Events
 // 
 
+wss.on("connection", (socket) => {
+    console.log("[Socket] New connection!");
+    room.addParticipant(socket);
+})
+
+wss.on("error", (err) => {
+    console.log(err);
+})
+
+wss.on("listening", () => {
+    console.log("Hi");
+})
+
 //
 //  WebServer Routes
 //
 
-//Server Initialization
-app.listen(config["serverPort"], () => {
+//  Server Initialization
+server.listen(config["serverPort"], () => {
     console.log("Listening on port " + config["serverPort"] + "...");
 })
