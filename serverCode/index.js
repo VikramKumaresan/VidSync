@@ -35,6 +35,10 @@ wss.on("listening", () => {
 //
 //  WebServer Routes
 //
+app.get("/flushRoom", (req, res) => {
+    room.flushRoom();
+    res.end();
+})
 
 //  Server Initialization
 server.listen(config["serverPort"], () => {

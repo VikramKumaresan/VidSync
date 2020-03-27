@@ -61,7 +61,7 @@ class Room {
 
     flushRoom() {
         this.#participants.forEach((participant) => {
-            participant.send(createResponse("message", "Room has been closed!"));
+            participant.socket.send(createResponse("message", "Room has been closed!"));
         })
         this.#participants = Array();
         this.#partialParticipants = Array();
