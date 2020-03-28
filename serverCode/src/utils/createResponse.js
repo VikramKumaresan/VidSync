@@ -1,7 +1,8 @@
-function createResponse(tag, data) {
+function createResponse(tag, data, participantName = "") {
     response = {
         tag: tag,
-        message: data
+        message: data,
+        name: participantName
     };
     return JSON.stringify(response);
 }

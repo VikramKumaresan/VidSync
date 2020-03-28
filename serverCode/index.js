@@ -28,10 +28,6 @@ wss.on("error", (err) => {
     console.log(err);
 })
 
-wss.on("listening", () => {
-    console.log("Hi");
-})
-
 //
 //  WebServer Routes
 //
