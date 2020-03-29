@@ -1,6 +1,22 @@
+let nameSubmitButton = null;
+
 window.addEventListener('DOMContentLoaded', () => {
     checkVideoTagAvailable();
+
+    nameSubmitButton = document.getElementById("updateButton");
+    nameSubmitButton.addEventListener("click", sendNameToBackground);
 });
+
+async function sendNameToBackground() {
+    let result = await browser.runtime.sendMessage({
+        "tag": "popUpName",
+        "name": document.getElementById("name").value
+    });
+
+    if (result["result"]) {
+        // TODO Send sync message
+    }
+}
 
 function videoTagResult(result) {
     if (!result) {
