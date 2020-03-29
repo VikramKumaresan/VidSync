@@ -14,16 +14,17 @@ async function sendNameToBackground() {
     });
 
     if (result["result"]) {
-        // TODO Send sync message
+        showMessageInPopUp("Connecting to server...")
     }
 }
 
-function videoTagResult(result) {
-    if (!result) {
-        //  Display error div + Hide form
-        document.getElementById("errorMessage").style.display = "block";
-        document.getElementById("form").style.display = "none";
-    }
+//  Hides form and displays message
+function showMessageInPopUp(message) {
+    const messageTag = document.getElementById("errorMessage");
+    messageTag.innerHTML = message;
+    messageTag.style.display = "block";
+
+    document.getElementById("form").style.display = "none";
 }
 
 async function checkVideoTagAvailable() {
@@ -58,5 +59,7 @@ async function checkVideoTagAvailable() {
         });
     }
 
-    videoTagResult(result["result"]);
+    if (!result["result"]) {
+        showMessageInPopUp("No capturable video sources available!")
+    }
 }
