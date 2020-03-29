@@ -1,0 +1,20 @@
+{
+    "description": "Addon to enable video sync, with a group of people, for the video on a page.",
+    "manifest_version": 2,
+    "name": "vidSync",
+    "version": "1.0",
+    "permissions": [
+        "activeTab"
+    ],
+    "background": {
+        "page": "src/background/main.html"
+    },
+    "browser_action": {
+        "browser_style": true,
+        "default_popup": "src/updationPopup/participantUpdation.html",
+        "default_icon": {
+            "16": "icon.svg",
+            "32": "icon.svg"
+        }
+    }
+}
