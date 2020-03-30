@@ -10,7 +10,7 @@ const server = http.createServer(app)
 const ws = require('ws');
 const wss = new ws.Server({ server: server });
 
-const config = require("./config.json");
+const config = require("../config.json");
 
 const roomClass = require("./src/room");
 const room = new roomClass(wss);

@@ -6,7 +6,7 @@ let webSocketManagerInstance;
 browser.runtime.onMessage.addListener((data) => {
 
     //  Name from browser action script
-    if (data["tag"] == "popUpName") {
+    if (data["tag"] == "popUpName" && !webSocketManagerInstance) {
         webSocketManagerInstance = new WebSocketManager(data["name"]);
         return Promise.resolve({ "result": true });
     }
