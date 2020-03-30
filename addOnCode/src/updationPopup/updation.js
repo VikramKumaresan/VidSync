@@ -1,10 +1,17 @@
-let nameSubmitButton = null;
-
 window.addEventListener('DOMContentLoaded', () => {
     checkVideoTagAvailable();
 
-    nameSubmitButton = document.getElementById("updateButton");
-    nameSubmitButton.addEventListener("click", sendNameToBackground);
+    document.getElementById("updateButton").addEventListener("click", sendNameToBackground);
+});
+
+//  Listen to messages
+browser.runtime.onMessage.addListener((data) => {
+
+    //  Error from background script
+    if (data["tag"] == "backgroundScriptConnectionError") {
+        showMessageInPopUp("Cannot cannect to server!");
+    }
+
 });
 
 async function sendNameToBackground() {
@@ -37,7 +44,7 @@ async function checkVideoTagAvailable() {
 
     let result;
 
-    //  Check if script already loaded
+    //  Check if content script already loaded
     try {
 
         //  Check if videoTag accessible
@@ -48,7 +55,7 @@ async function checkVideoTagAvailable() {
     } catch (e) {
         console.log(e);
 
-        //  Inject script
+        //  Inject content script
         await browser.tabs.executeScript({
             file: "../contentScript/contentScript.js"
         });

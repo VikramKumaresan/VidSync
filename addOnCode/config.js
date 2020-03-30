@@ -1,4 +1,3 @@
-{
-    "serverPort": 3000,
+config = {
     "socketServerUrl": "ws://localhost:3000"
 }
