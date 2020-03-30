@@ -11,6 +11,10 @@ browser.runtime.onMessage.addListener((data) => {
     if (data["tag"] == "backgroundScriptConnectionError") {
         showMessageInPopUp("Cannot cannect to server!");
     }
+    //  Close from background script
+    else if (data["tag"] == "backgroundScriptConnectionClose") {
+        showMessageInPopUp("Connection closed from server!");
+    }
 
 });
 

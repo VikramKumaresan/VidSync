@@ -27,4 +27,13 @@ function emitErrorToPopupScript(errorString) {
         }
         catch (e) { }
     }
+    else if (errorString == "connectionClose") {
+        //  Send close to pop up script [If it exists]
+        try {
+            browser.runtime.sendMessage({
+                "tag": "backgroundScriptConnectionClose"
+            });
+        }
+        catch (e) { }
+    }
 }
