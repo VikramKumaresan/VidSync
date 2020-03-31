@@ -1,5 +1,6 @@
 class WebSocketManager {
     name;
+    videoSrc;
     socket;
     onMessageBackgroundListener;
 
@@ -8,8 +9,9 @@ class WebSocketManager {
     //
     isCannotConnect = false;
 
-    constructor(name, listener) {
+    constructor(name, src, listener) {
         this.name = name;
+        this.videoSrc = src;
         this.onMessageBackgroundListener = listener;
     }
 
@@ -20,6 +22,10 @@ class WebSocketManager {
         this.socket.onclose = () => { this.onCloseListener(this); }
         this.socket.onopen = () => { this.onOpenListener(this); }
 
+    }
+
+    sendMessageToServer(message) {
+        this.socket.send(JSON.stringify(message));
     }
 
     disconnectFromSocketServer() {
@@ -43,7 +49,14 @@ class WebSocketManager {
     }
 
     onOpenListener(context) {
-        //  Connection established to server
+        //  Send participant details
+        const message = {
+            "tag": tags["socketServerTags"]["update"],
+            "name": this.name,
+            "videoSrc": this.videoSrc
+        }
+        this.sendMessageToServer(message);
+
         context.onMessageBackgroundListener(tags["webSocketMessages"]["connectionOpen"]);
     }
 }

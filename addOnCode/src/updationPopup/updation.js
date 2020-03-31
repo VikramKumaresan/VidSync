@@ -1,7 +1,9 @@
-window.addEventListener('DOMContentLoaded', () => {
-    checkVideoTagAvailable();
+let videoUrl;
 
-    document.getElementById("updateButton").addEventListener("click", sendNameToBackground);
+window.addEventListener('DOMContentLoaded', () => {
+    checkVideoTagStatus();
+
+    document.getElementById("updateButton").addEventListener("click", sendDataToBackground);
 });
 
 //  Listen to messages
@@ -15,17 +17,18 @@ browser.runtime.onMessage.addListener((data) => {
     else if (data["tag"] == tags["error"]["connectionClose"]) {
         showMessageInPopUp(tags["messages"]["connectionClosedServer"]);
     }
-    //  Connected to server
+    //  Connected to server from background script
     else if (data["tag"] == tags["webSocketMessages"]["connectionOpen"]) {
         showMessageInPopUp(tags["messages"]["connectedServer"]);
     }
 
 });
 
-async function sendNameToBackground() {
+async function sendDataToBackground() {
     let result = await browser.runtime.sendMessage({
-        "tag": tags["popUpBackground"]["nameUpdate"],
-        "name": document.getElementById("name").value
+        "tag": tags["popUpBackground"]["update"],
+        "name": document.getElementById("name").value,
+        "url": videoUrl
     });
 
     if (result["result"]) {
@@ -42,7 +45,7 @@ function showMessageInPopUp(message) {
     document.getElementById("form").style.display = "none";
 }
 
-async function checkVideoTagAvailable() {
+async function checkVideoTagStatus() {
 
     //  Get active tab
     let tabArray = await browser.tabs.query({
@@ -55,9 +58,9 @@ async function checkVideoTagAvailable() {
     //  Check if content script already loaded
     try {
 
-        //  Check if videoTag accessible
+        //  Check if videoTag ready
         result = await browser.tabs.sendMessage(tabArray[0].id, {
-            "tag": tags["popUpContent"]["videoTagAccess"]
+            "tag": tags["popUpContent"]["videoTag"]
         });
 
     } catch (e) {
@@ -73,13 +76,16 @@ async function checkVideoTagAvailable() {
             file: "../contentScript/contentScript.js"
         });
 
-        //  Check if videoTag accessible
+        //  Check if videoTag ready
         result = await browser.tabs.sendMessage(tabArray[0].id, {
-            "tag": tags["popUpContent"]["videoTagAccess"]
+            "tag": tags["popUpContent"]["videoTag"]
         });
     }
 
     if (!result["result"]) {
-        showMessageInPopUp(tags["messages"]["noCapturableTags"])
+        showMessageInPopUp(result["tag"]);
+    }
+    else {
+        videoUrl = result["url"];
     }
 }

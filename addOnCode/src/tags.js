@@ -1,11 +1,11 @@
 tags = {
     //  PopUp <--> Background Script
     "popUpBackground": {
-        "nameUpdate": 0
+        "update": 0
     },
     //  PopUp <--> Content Script
     "popUpContent": {
-        "videoTagAccess": 1
+        "videoTag": 1
     },
     //  Content <--> Background
     "contentBackground": {
@@ -18,8 +18,16 @@ tags = {
     "webSocketMessages": {
         "connectionOpen": 3
     },
+    //  When sending to server
+    "socketServerTags": {
+        "update": "update",
+        "seek": "seek",
+        "pause": "pause",
+        "play": "play"
+    },
     "messages": {
         "noCapturableTags": "No capturable video sources available!",
+        "notReadyState": "Video is still loading. Try again after a bit!",
         "connectingServer": "Connecting to server...",
         "cannotConnectServer": "Cannot connect to server!",
         "connectionClosedServer": "Connection closed from server!",

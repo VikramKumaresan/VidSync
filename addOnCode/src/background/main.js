@@ -6,7 +6,7 @@ let webSocketManagerInstance;
 browser.runtime.onMessage.addListener((data) => {
 
     //  Name from browser action script
-    if (data["tag"] == tags["popUpBackground"]["nameUpdate"]) {
+    if (data["tag"] == tags["popUpBackground"]["update"]) {
 
         //  Disconnect and release old instance
         if (webSocketManagerInstance) {
@@ -14,7 +14,7 @@ browser.runtime.onMessage.addListener((data) => {
             webSocketManagerInstance = null;
         }
 
-        webSocketManagerInstance = new WebSocketManager(data["name"], emitMessageToPopupScript);
+        webSocketManagerInstance = new WebSocketManager(data["name"], data["url"], emitMessageToPopupScript);
         webSocketManagerInstance.connectToSocketServer();
         return Promise.resolve({ "result": true });
     }
