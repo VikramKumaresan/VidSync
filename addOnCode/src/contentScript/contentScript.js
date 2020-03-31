@@ -1,4 +1,18 @@
 const videoTag = document.getElementsByTagName("video")[0];
+let isAutoPlayAllowed = false;
+
+//  Check if auto play allowed
+if (videoTag) {
+    checkIfAutoPlayEnabled = async () => {
+        try {
+            await videoTag.play();
+            isAutoPlayAllowed = true;
+            videoTag.pause();
+        } catch (e) { }
+    }
+    checkIfAutoPlayEnabled();
+}
+
 
 //  Listen for messages
 browser.runtime.onMessage.addListener((data) => {
@@ -9,7 +23,10 @@ browser.runtime.onMessage.addListener((data) => {
             return Promise.resolve({ "result": false, "tag": tags["messages"]["noCapturableTags"] });
         }
 
-        if (videoTag.readyState == 0) {
+        if (!isAutoPlayAllowed) {
+            return Promise.resolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] });
+        }
+        else if (videoTag.readyState == 0) {
             videoTag.play();
             return Promise.resolve({ "result": false, "tag": tags["messages"]["notReadyState"] });
         }

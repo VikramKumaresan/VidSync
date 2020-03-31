@@ -28,6 +28,7 @@ tags = {
     "messages": {
         "noCapturableTags": "No capturable video sources available!",
         "notReadyState": "Video is still loading. Try again after a bit!",
+        "noAutoPlay": "Auto play disabled. Pls allow auto play!",
         "connectingServer": "Connecting to server...",
         "cannotConnectServer": "Cannot connect to server!",
         "connectionClosedServer": "Connection closed from server!",
