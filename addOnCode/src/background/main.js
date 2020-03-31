@@ -7,32 +7,33 @@ browser.runtime.onMessage.addListener((data) => {
 
     //  Name from browser action script
     if (data["tag"] == tags["popUpBackground"]["nameUpdate"]) {
+
+        //  Disconnect and release old instance
+        if (webSocketManagerInstance) {
+            webSocketManagerInstance.disconnectFromSocketServer();
+            webSocketManagerInstance = null;
+        }
+
         webSocketManagerInstance = new WebSocketManager(data["name"], emitMessageToPopupScript);
         webSocketManagerInstance.connectToSocketServer();
         return Promise.resolve({ "result": true });
     }
+    else if (data["tag"] == tags["contentBackground"]["windowClose"]) {
+        //  Tab changed url/closed
+        if (webSocketManagerInstance) {
+            webSocketManagerInstance.disconnectFromSocketServer();
+            webSocketManagerInstance = null;
+        }
+    }
 
 });
 
-function emitMessageToPopupScript(errorString) {
+function emitMessageToPopupScript(tag) {
 
-    //  TODO Update global state
-
-    message = (tag) => {
-        try {
-            browser.runtime.sendMessage({
-                "tag": tag
-            });
-        }
-        catch (e) { }
+    try {
+        browser.runtime.sendMessage({
+            "tag": tag
+        });
     }
-
-    if (errorString == tags["error"]["connectionError"]) {
-        //  Send error to pop up script [If it exists]
-        message(tags["error"]["connectionError"])
-    }
-    else if (errorString == tags["error"]["connectionClose"]) {
-        //  Send close to pop up script [If it exists]
-        message(tags["error"]["connectionClose"])
-    }
+    catch (e) { }
 }

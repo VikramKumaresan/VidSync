@@ -15,6 +15,10 @@ browser.runtime.onMessage.addListener((data) => {
     else if (data["tag"] == tags["error"]["connectionClose"]) {
         showMessageInPopUp(tags["messages"]["connectionClosedServer"]);
     }
+    //  Connected to server
+    else if (data["tag"] == tags["webSocketMessages"]["connectionOpen"]) {
+        showMessageInPopUp(tags["messages"]["connectedServer"]);
+    }
 
 });
 

@@ -12,3 +12,10 @@ browser.runtime.onMessage.addListener((data) => {
     }
 
 });
+
+//  Fired on tab close/url change
+window.addEventListener("beforeunload", () => {
+    browser.runtime.sendMessage({
+        "tag": tags["contentBackground"]["windowClose"]
+    });
+})

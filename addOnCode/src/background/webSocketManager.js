@@ -1,7 +1,7 @@
 class WebSocketManager {
     name;
     socket;
-    onErrorBackgroundListener;
+    onMessageBackgroundListener;
 
     //
     //  onClose fired immediately after onError. Helps check and give meaningful error
@@ -10,7 +10,7 @@ class WebSocketManager {
 
     constructor(name, listener) {
         this.name = name;
-        this.onErrorBackgroundListener = listener;
+        this.onMessageBackgroundListener = listener;
     }
 
     connectToSocketServer() {
@@ -18,11 +18,17 @@ class WebSocketManager {
         this.socket = new WebSocket(config["socketServerUrl"]);
         this.socket.onerror = () => { this.onErrorListener(this); }
         this.socket.onclose = () => { this.onCloseListener(this); }
+        this.socket.onopen = () => { this.onOpenListener(this); }
+
+    }
+
+    disconnectFromSocketServer() {
+        this.socket.close();
     }
 
     onErrorListener(context) {
         //  Can't connect to server
-        context.onErrorBackgroundListener(tags["error"]["connectionError"]);
+        context.onMessageBackgroundListener(tags["error"]["connectionError"]);
         this.isCannotConnect = true;
     }
 
@@ -33,6 +39,11 @@ class WebSocketManager {
         }
 
         //  Connection to server closed
-        context.onErrorBackgroundListener(tags["error"]["connectionClose"]);
+        context.onMessageBackgroundListener(tags["error"]["connectionClose"]);
+    }
+
+    onOpenListener(context) {
+        //  Connection established to server
+        context.onMessageBackgroundListener(tags["webSocketMessages"]["connectionOpen"]);
     }
 }
