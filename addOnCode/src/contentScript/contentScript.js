@@ -4,7 +4,7 @@ const videoTags = document.getElementsByTagName("video");
 browser.runtime.onMessage.addListener((data) => {
 
     //  Check if video tag present/accessible
-    if (data["tag"] == "contentScriptIsVideoTagAccessible") {
+    if (data["tag"] == tags["popUpContent"]["videoTagAccess"]) {
         if (videoTags.length != 0) {
             return Promise.resolve({ "result": true });
         }

@@ -8,24 +8,24 @@ window.addEventListener('DOMContentLoaded', () => {
 browser.runtime.onMessage.addListener((data) => {
 
     //  Error from background script
-    if (data["tag"] == "backgroundScriptConnectionError") {
-        showMessageInPopUp("Cannot cannect to server!");
+    if (data["tag"] == tags["error"]["connectionError"]) {
+        showMessageInPopUp(tags["messages"]["cannotConnectServer"]);
     }
     //  Close from background script
-    else if (data["tag"] == "backgroundScriptConnectionClose") {
-        showMessageInPopUp("Connection closed from server!");
+    else if (data["tag"] == tags["error"]["connectionClose"]) {
+        showMessageInPopUp(tags["messages"]["connectionClosedServer"]);
     }
 
 });
 
 async function sendNameToBackground() {
     let result = await browser.runtime.sendMessage({
-        "tag": "popUpName",
+        "tag": tags["popUpBackground"]["nameUpdate"],
         "name": document.getElementById("name").value
     });
 
     if (result["result"]) {
-        showMessageInPopUp("Connecting to server...")
+        showMessageInPopUp(tags["messages"]["connectingServer"]);
     }
 }
 
@@ -53,11 +53,16 @@ async function checkVideoTagAvailable() {
 
         //  Check if videoTag accessible
         result = await browser.tabs.sendMessage(tabArray[0].id, {
-            "tag": "contentScriptIsVideoTagAccessible"
+            "tag": tags["popUpContent"]["videoTagAccess"]
         });
 
     } catch (e) {
         console.log(e);
+
+        //  Inject tags.js
+        await browser.tabs.executeScript({
+            file: "../tags.js"
+        });
 
         //  Inject content script
         await browser.tabs.executeScript({
@@ -66,11 +71,11 @@ async function checkVideoTagAvailable() {
 
         //  Check if videoTag accessible
         result = await browser.tabs.sendMessage(tabArray[0].id, {
-            "tag": "contentScriptIsVideoTagAccessible"
+            "tag": tags["popUpContent"]["videoTagAccess"]
         });
     }
 
     if (!result["result"]) {
-        showMessageInPopUp("No capturable video sources available!")
+        showMessageInPopUp(tags["messages"]["noCapturableTags"])
     }
 }

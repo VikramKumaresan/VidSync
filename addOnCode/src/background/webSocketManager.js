@@ -3,6 +3,11 @@ class WebSocketManager {
     socket;
     onErrorBackgroundListener;
 
+    //
+    //  onClose fired immediately after onError. Helps check and give meaningful error
+    //
+    isCannotConnect = false;
+
     constructor(name, listener) {
         this.name = name;
         this.onErrorBackgroundListener = listener;
@@ -17,11 +22,17 @@ class WebSocketManager {
 
     onErrorListener(context) {
         //  Can't connect to server
-        context.onErrorBackgroundListener("connectionError");
+        context.onErrorBackgroundListener(tags["error"]["connectionError"]);
+        this.isCannotConnect = true;
     }
 
     onCloseListener(context) {
+        if (this.isCannotConnect) {
+            this.isCannotConnect = false;
+            return;
+        }
+
         //  Connection to server closed
-        context.onErrorBackgroundListener("connectionClose");
+        context.onErrorBackgroundListener(tags["error"]["connectionClose"]);
     }
 }

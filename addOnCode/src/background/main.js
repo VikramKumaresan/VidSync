@@ -6,34 +6,33 @@ let webSocketManagerInstance;
 browser.runtime.onMessage.addListener((data) => {
 
     //  Name from browser action script
-    if (data["tag"] == "popUpName") {
-        webSocketManagerInstance = new WebSocketManager(data["name"], emitErrorToPopupScript);
+    if (data["tag"] == tags["popUpBackground"]["nameUpdate"]) {
+        webSocketManagerInstance = new WebSocketManager(data["name"], emitMessageToPopupScript);
         webSocketManagerInstance.connectToSocketServer();
         return Promise.resolve({ "result": true });
     }
 
 });
 
-function emitErrorToPopupScript(errorString) {
+function emitMessageToPopupScript(errorString) {
 
     //  TODO Update global state
 
-    if (errorString == "connectionError") {
-        //  Send error to pop up script [If it exists]
+    message = (tag) => {
         try {
             browser.runtime.sendMessage({
-                "tag": "backgroundScriptConnectionError"
+                "tag": tag
             });
         }
         catch (e) { }
     }
-    else if (errorString == "connectionClose") {
+
+    if (errorString == tags["error"]["connectionError"]) {
+        //  Send error to pop up script [If it exists]
+        message(tags["error"]["connectionError"])
+    }
+    else if (errorString == tags["error"]["connectionClose"]) {
         //  Send close to pop up script [If it exists]
-        try {
-            browser.runtime.sendMessage({
-                "tag": "backgroundScriptConnectionClose"
-            });
-        }
-        catch (e) { }
+        message(tags["error"]["connectionClose"])
     }
 }
