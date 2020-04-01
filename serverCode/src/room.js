@@ -19,33 +19,36 @@ class Room {
         this.#partialParticipants.push(participant);
     }
 
-    updateParticipant(socket, name, videoSrc) {
+    updateParticipant(participant) {
+
+        //  Compare with leader videoSrc
+        const leaderVideoSrc = this.getRoomVideoSrc();
+        if (leaderVideoSrc && (leaderVideoSrc != participant.videoSrc)) {
+            return { "isUpdate": false, "videoSrc": leaderVideoSrc };
+        }
+
         //  Update and add to participants
-
         for (let i = 0; i < this.#partialParticipants.length; i++) {
-            if (this.#partialParticipants[i].socket == socket) {
-                this.#partialParticipants[i].videoSrc = videoSrc;
-                this.#partialParticipants[i].name = name;
-
-                this.#participants.push(this.#partialParticipants[i]);
+            if (this.#partialParticipants[i] == participant) {
+                this.#participants.push(participant);
                 this.#partialParticipants.splice(i, 1);
-                return;
+                return { "isUpdate": true };
             }
         }
     }
 
-    removeParticipant(socket) {
+    removeParticipant(participant) {
         //  Called when socket disconnects
 
         for (let i = 0; i < this.#partialParticipants.length; i++) {
-            if (this.#partialParticipants[i].socket == socket) {
+            if (this.#partialParticipants[i] == participant) {
                 this.#partialParticipants.splice(i, 1);
                 return;
             }
         }
 
         for (let i = 0; i < this.#participants.length; i++) {
-            if (this.#participants[i].socket == socket) {
+            if (this.#participants[i] == participant) {
                 this.#participants.splice(i, 1);
                 return;
             }
@@ -71,14 +74,14 @@ class Room {
     }
 
     //  Synchronize method calls
-    synchronizePlay(socket) {
-        this.#synchronizerInstance.emitPlay(socket);
+    synchronizePlay(participant) {
+        this.#synchronizerInstance.emitPlay(participant);
     }
-    synchronizePause(socket) {
-        this.#synchronizerInstance.emitPause(socket);
+    synchronizePause(participant) {
+        this.#synchronizerInstance.emitPause(participant);
     }
-    synchronizeSeek(socket, seekTo) {
-        this.#synchronizerInstance.emitSeek(socket, seekTo);
+    synchronizeSeek(participant, seekTo) {
+        this.#synchronizerInstance.emitSeek(participant, seekTo);
     }
 
 }

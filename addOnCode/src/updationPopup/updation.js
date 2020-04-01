@@ -21,6 +21,10 @@ browser.runtime.onMessage.addListener((data) => {
     else if (data["tag"] == tags["webSocketMessages"]["connectionOpen"]) {
         showMessageInPopUp(tags["messages"]["connectedServer"]);
     }
+    //  Updation failed from background script
+    else if (data["tag"] == tags["messages"]["updationServerFailed"]) {
+        showMessageInPopUp(tags["messages"]["updationServerFailed"] + data["extra"]);
+    }
 
 });
 

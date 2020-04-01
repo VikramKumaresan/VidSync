@@ -32,6 +32,7 @@ tags = {
         "connectingServer": "Connecting to server...",
         "cannotConnectServer": "Cannot connect to server!",
         "connectionClosedServer": "Connection closed from server!",
+        "updationServerFailed": "Sync failed! Others are watching ",
         "connectedServer": "Connected and syncing!"
     }
 }

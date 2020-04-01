@@ -7,21 +7,7 @@ class Synchronizer {
         this.#participants = participants;
     }
 
-    getSocketParticipant(socket) {
-        for (let i = 0; i < this.#participants.length; i++) {
-            if (socket == this.#participants[i].socket) {
-                return this.#participants[i];
-            }
-        }
-        return null
-    }
-
-    emitPause(socket) {
-        const fromParticipant = this.getSocketParticipant(socket);
-        if (fromParticipant == null) {
-            return
-        }
-
+    emitPause(fromParticipant) {
         this.#participants.forEach((participant) => {
             if (participant == fromParticipant) {
                 return;
@@ -30,12 +16,7 @@ class Synchronizer {
         });
     }
 
-    emitPlay(socket) {
-        const fromParticipant = this.getSocketParticipant(socket);
-        if (fromParticipant == null) {
-            return
-        }
-
+    emitPlay(fromParticipant) {
         this.#participants.forEach((participant) => {
             if (participant == fromParticipant) {
                 return;
@@ -44,12 +25,7 @@ class Synchronizer {
         });
     }
 
-    emitSeek(socket, seekTo) {
-        const fromParticipant = this.getSocketParticipant(socket);
-        if (fromParticipant == null) {
-            return
-        }
-
+    emitSeek(fromParticipant, seekTo) {
         this.#participants.forEach((participant) => {
             if (participant == fromParticipant) {
                 return;

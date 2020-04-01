@@ -18,9 +18,12 @@ class WebSocketManager {
     connectToSocketServer() {
         //  Open socket connection
         this.socket = new WebSocket(config["socketServerUrl"]);
+
+        //  Attach listeners
         this.socket.onerror = () => { this.onErrorListener(this); }
         this.socket.onclose = () => { this.onCloseListener(this); }
         this.socket.onopen = () => { this.onOpenListener(this); }
+        this.socket.onmessage = (message) => { this.onMessageListener(this, this.parseServerMessage(message)) };
 
     }
 
@@ -58,5 +61,19 @@ class WebSocketManager {
         this.sendMessageToServer(message);
 
         context.onMessageBackgroundListener(tags["webSocketMessages"]["connectionOpen"]);
+    }
+
+    onMessageListener(context, data) {
+        //  Check if server updation failed
+        if (data["tag"] == tags["socketServerTags"]["update"]) {
+            if (!data["message"]["isUpdate"]) {
+                context.onMessageBackgroundListener(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
+            }
+        }
+    }
+
+    parseServerMessage(message) {
+        //  Server message present within 'data' object (Web Specification)
+        return JSON.parse(message.data);
     }
 }

@@ -28,11 +28,13 @@ browser.runtime.onMessage.addListener((data) => {
 
 });
 
-function emitMessageToPopupScript(tag) {
+function emitMessageToPopupScript(tag, extraData = "") {
+    //  Update pop up script [If it exists]
 
     try {
         browser.runtime.sendMessage({
-            "tag": tag
+            "tag": tag,
+            "extra": extraData
         });
     }
     catch (e) { }
