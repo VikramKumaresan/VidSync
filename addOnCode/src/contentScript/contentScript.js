@@ -33,6 +33,17 @@ browser.runtime.onMessage.addListener((data) => {
 
         return Promise.resolve({ "result": true, "url": document.URL });
     }
+    //  Synchronize calls
+    else if (data["tag"] == tags["socketServerTags"]["pause"]) {
+        videoTag.pause();
+    }
+    else if (data["tag"] == tags["socketServerTags"]["play"]) {
+        console.log("PLay Called")
+        videoTag.play();
+    }
+    else if (data["tag"] == tags["socketServerTags"]["seek"]) {
+        videoTag.currentTime = data["data"];
+    }
 
 });
 

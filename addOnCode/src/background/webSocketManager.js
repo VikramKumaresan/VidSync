@@ -70,6 +70,20 @@ class WebSocketManager {
                 context.onMessageBackgroundListener(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
             }
         }
+        else if (data["tag"] == tags["socketServerTags"]["pause"]) {
+            context.onMessageBackgroundListener(tags["socketServerTags"]["pause"], data["name"]);
+        }
+        else if (data["tag"] == tags["socketServerTags"]["play"]) {
+            context.onMessageBackgroundListener(tags["socketServerTags"]["play"], data["name"]);
+        }
+        else if (data["tag"] == tags["socketServerTags"]["seek"]) {
+            context.onMessageBackgroundListener(tags["socketServerTags"]["seek"],
+                {
+                    "name": data["name"],
+                    "seekTo": data["message"]
+                }
+            );
+        }
     }
 
     parseServerMessage(message) {
