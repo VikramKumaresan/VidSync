@@ -24,9 +24,16 @@ browser.runtime.onMessage.addListener((data) => {
             this.releaseOldInstances();
         }
     }
-
+    //  Synchronize calls from content script
+    else if ((data["tag"] == tags["socketServerTags"]["pause"]) || (data["tag"] == tags["socketServerTags"]["play"])) {
+        webSocketManagerInstance.sendMessageToServer(data);
+    }
+    else if (data["tag"] == tags["socketServerTags"]["seek"]) {
+        webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "seekTo": data["extraData"] });
+    }
 });
 
+//  From socketManager
 function messageListener(tag, extraData = "") {
     //  Synchronize messages from socket
     if (tag == tags["socketServerTags"]["pause"]) {
