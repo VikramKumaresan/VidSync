@@ -5,7 +5,8 @@ tags = {
     },
     //  PopUp <--> Content Script
     "popUpContent": {
-        "videoTag": 1
+        "videoTag": 1,
+        "reloadPopUp": 4
     },
     //  Content <--> Background
     "contentBackground": {

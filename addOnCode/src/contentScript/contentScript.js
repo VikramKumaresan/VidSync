@@ -31,9 +31,23 @@ browser.runtime.onMessage.addListener((data) => {
         if (!videoTag) {
             return Promise.resolve({ "result": false, "tag": tags["messages"]["noCapturableTags"] });
         }
+        else if (!isAutoPlayAllowed) {
 
-        if (!isAutoPlayAllowed) {
-            return Promise.resolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] });
+            //  Recheck if autoPlay not enabled
+            return new Promise(async (resolve) => {
+                try {
+                    await videoTag.play();
+                    isAutoPlayAllowed = true;
+                    videoTag.pause();
+
+                    attachListenersToVideoTag();
+
+                    return resolve({ "result": true, "tag": tags["popUpContent"]["reloadPopUp"] })
+                } catch (e) {
+                    return resolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] })
+                }
+            });
+
         }
         else if (videoTag.readyState == videoTag.HAVE_NOTHING) {
             videoTag.play();

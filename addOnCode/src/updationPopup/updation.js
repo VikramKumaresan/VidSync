@@ -90,6 +90,12 @@ async function checkVideoTagStatus() {
         showMessageInPopUp(result["tag"]);
     }
     else {
+        //  Reload popUp
+        if (("tag" in result) && (result["tag"] == tags["popUpContent"]["reloadPopUp"])) {
+            location.reload();
+            return;
+        }
+
         videoUrl = result["url"];
     }
 }
