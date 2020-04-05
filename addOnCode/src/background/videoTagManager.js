@@ -28,6 +28,14 @@ class VideoTagManager {
         this.emitToContentScript(tags["socketServerTags"]["seek"], seekTo);
     }
 
+    getTime() {
+        this.emitToContentScript(tags["socketServerTags"]["getTime"]);
+    }
+
+    sync(time) {
+        this.emitToContentScript(tags["socketServerTags"]["syncAll"], time);
+    }
+
     emitToContentScript(tag, data = "") {
         browser.tabs.sendMessage(this.currentTabId, {
             "tag": tag,

@@ -23,7 +23,9 @@ tags = {
         "update": "update",
         "seek": "seek",
         "pause": "pause",
-        "play": "play"
+        "play": "play",
+        "syncAll": "syncAll",
+        "getTime": "getTime"
     },
     "messages": {
         "noCapturableTags": "No capturable video sources available!",

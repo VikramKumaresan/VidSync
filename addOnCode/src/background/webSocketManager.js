@@ -84,6 +84,12 @@ class WebSocketManager {
                 }
             );
         }
+        else if (data["tag"] == tags["socketServerTags"]["getTime"]) {
+            context.onMessageBackgroundListener(tags["socketServerTags"]["getTime"]);
+        }
+        else if (data["tag"] == tags["socketServerTags"]["syncAll"]) {
+            context.onMessageBackgroundListener(tags["socketServerTags"]["syncAll"], data["message"]);
+        }
     }
 
     parseServerMessage(message) {

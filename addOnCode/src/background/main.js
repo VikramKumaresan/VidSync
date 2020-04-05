@@ -31,6 +31,9 @@ browser.runtime.onMessage.addListener((data) => {
     else if (data["tag"] == tags["socketServerTags"]["seek"]) {
         webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "seekTo": data["extraData"] });
     }
+    else if (data["tag"] == tags["socketServerTags"]["getTime"]) {
+        webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "currentTime": data["extraData"] });
+    }
 });
 
 //  From socketManager
@@ -44,6 +47,12 @@ function messageListener(tag, extraData = "") {
     }
     else if (tag == tags["socketServerTags"]["seek"]) {
         videoTagManagerInstance.seekVideo(extraData["seekTo"]);
+    }
+    else if (tag == tags["socketServerTags"]["getTime"]) {
+        videoTagManagerInstance.getTime();
+    }
+    else if (tag == tags["socketServerTags"]["syncAll"]) {
+        videoTagManagerInstance.sync(extraData);
     }
     //  Other messages from socket
     else {

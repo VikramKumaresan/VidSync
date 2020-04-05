@@ -1,11 +1,6 @@
 const videoTag = document.getElementsByTagName("video")[0];
-let isAutoPlayAllowed = false;
 
-//  Synchronize Call Flags
-let isPlayFromSocketExecution = false;
-let isPauseFromSocketExecution = false;
-let isSeekFromSocketExecution = false;
-let wasBuffering = false;
+let isAutoPlayAllowed = false;
 
 //  Check if auto play allowed
 if (videoTag) {
@@ -20,6 +15,12 @@ if (videoTag) {
     }
     checkIfAutoPlayEnabled();
 }
+
+//  Synchronize Call Flags
+let isPlayFromSocketExecution = false;
+let isPauseFromSocketExecution = false;
+let isSeekFromSocketExecution = false;
+let wasBuffering = false;
 
 
 //  Listen for messages
@@ -43,12 +44,11 @@ browser.runtime.onMessage.addListener((data) => {
     }
     //  Synchronize calls
     else if (data["tag"] == tags["socketServerTags"]["pause"]) {
-        //  Already paused (Callback will not be triggered)
-        if (videoTag.paused) {
-            return;
+        //  If not paused (Callback will not be triggered if pause on paused)
+        if (!videoTag.paused) {
+            isPauseFromSocketExecution = true;
+            videoTag.pause();
         }
-        isPauseFromSocketExecution = true;
-        videoTag.pause();
     }
     else if (data["tag"] == tags["socketServerTags"]["play"]) {
         //  Video buffering
@@ -67,7 +67,21 @@ browser.runtime.onMessage.addListener((data) => {
         isSeekFromSocketExecution = true;
         videoTag.currentTime = data["data"];
     }
+    else if (data["tag"] == tags["socketServerTags"]["getTime"]) {
+        sendMessageToBackground(tags["socketServerTags"]["getTime"], videoTag.currentTime);
+    }
+    else if (data["tag"] == tags["socketServerTags"]["syncAll"]) {
+        //  First pauses. Then Syncs
 
+        //  If not paused (Callback will not be triggered if pause on paused)
+        if (!videoTag.paused) {
+            isPauseFromSocketExecution = true;
+            videoTag.pause();
+        }
+
+        isSeekFromSocketExecution = true;
+        videoTag.currentTime = data["data"];
+    }
 });
 
 //  Fired on tab close/url change

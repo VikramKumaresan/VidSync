@@ -45,6 +45,10 @@ class Participant {
             else if (messageObj["tag"] == "play") {
                 roomInstance.synchronizePlay(this);
             }
+            //  Leader currentTime
+            else if (messageObj["tag"] == "getTime") {
+                roomInstance.syncAll(messageObj["currentTime"]);
+            }
 
         })
 

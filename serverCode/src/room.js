@@ -32,6 +32,10 @@ class Room {
             if (this.#partialParticipants[i] == participant) {
                 this.#participants.push(participant);
                 this.#partialParticipants.splice(i, 1);
+
+                //  Helps sync new participant to leader
+                this.#synchronizerInstance.startSyncAll();
+
                 return { "isUpdate": true };
             }
         }
@@ -82,6 +86,10 @@ class Room {
     }
     synchronizeSeek(participant, seekTo) {
         this.#synchronizerInstance.emitSeek(participant, seekTo);
+    }
+    //  Syncs all participants to leader time 
+    syncAll(leaderTime) {
+        this.#synchronizerInstance.syncAll(leaderTime);
     }
 
 }
