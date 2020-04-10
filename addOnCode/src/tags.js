@@ -1,7 +1,8 @@
 tags = {
     //  PopUp <--> Background Script
     "popUpBackground": {
-        "update": 0
+        "update": 0,
+        "getState": 5
     },
     //  PopUp <--> Content Script
     "popUpContent": {

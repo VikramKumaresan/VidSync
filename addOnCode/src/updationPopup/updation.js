@@ -1,10 +1,28 @@
 let videoUrl;
 
 window.addEventListener('DOMContentLoaded', () => {
-    checkVideoTagStatus();
+    initialize();
 
     document.getElementById("updateButton").addEventListener("click", sendDataToBackground);
 });
+
+async function initialize() {
+    let state = await getState();
+
+    if (state["isError"] || (state["stateMessage"].length != 0)) {
+        showMessageInPopUp(state["stateMessage"]);
+        return;
+    }
+
+    checkVideoTagStatus();
+}
+
+async function getState() {
+    let state = await browser.runtime.sendMessage({
+        "tag": tags["popUpBackground"]["getState"]
+    });
+    return Promise.resolve(state);
+}
 
 //  Listen to messages
 browser.runtime.onMessage.addListener((data) => {
