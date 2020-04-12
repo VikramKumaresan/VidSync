@@ -36,6 +36,10 @@ class VideoTagManager {
         this.emitToContentScript(tags["socketServerTags"]["syncAll"], time);
     }
 
+    displayMessage(tag, extraData) {
+        this.emitToContentScript(tag, extraData)
+    }
+
     emitToContentScript(tag, data = "", name = "") {
         browser.tabs.sendMessage(this.currentTabId, {
             "tag": tag,

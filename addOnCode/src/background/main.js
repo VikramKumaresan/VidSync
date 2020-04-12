@@ -78,6 +78,7 @@ function messageListener(tag, extraData = "") {
         //  Other messages from socket
         default:
             emitMessageToPopupScript(tag, extraData)
+            videoTagManagerInstance.displayMessage(tag, extraData);
     }
 }
 

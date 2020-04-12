@@ -23,8 +23,8 @@ if (videoTag) {
 //  Create message box
 const messageBox = document.createElement("div");
 messageBox.id = "messageBox";
-messageBox.style = "background-color: #e0e094; width: 15vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out;";
-messageBox.innerHTML = "<p id='message' style='margin:1em; font-size: 15px;'>Dummy Text</p>";
+messageBox.style = "background-color: #e0e094; width: 15vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out; opacity: 0;";
+messageBox.innerHTML = "<p id='message' style='margin:1em; font-size: 15px;'>Hello!</p>";
 
 //  Inject message box
 document.body.appendChild(messageBox);
@@ -89,6 +89,23 @@ browser.runtime.onMessage.addListener((data) => {
             }
 
             return Promise.resolve({ "result": true, "url": document.URL });
+
+        //  Message Display calls
+        case tags["error"]["connectionError"]:
+            displayMessage(tags["messages"]["cannotConnectServer"], failureColor);
+            break;
+
+        case tags["error"]["connectionClose"]:
+            displayMessage(tags["messages"]["connectionClosedServer"], failureColor);
+            break;
+
+        case tags["webSocketMessages"]["connectionOpen"]:
+            displayMessage(tags["messages"]["connectedServer"], successColor);
+            break;
+
+        case tags["messages"]["updationServerFailed"]:
+            displayMessage(tags["messages"]["updationServerFailed"] + data["data"], failureColor);
+            break;
 
         //  Synchronize calls
         case tags["socketServerTags"]["pause"]:
