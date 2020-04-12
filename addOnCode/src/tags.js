@@ -37,6 +37,10 @@ tags = {
         "cannotConnectServer": "Cannot connect to server!",
         "connectionClosedServer": "Connection closed from server!",
         "updationServerFailed": "Sync failed! Others are watching ",
-        "connectedServer": "Connected and syncing!"
+        "connectedServer": "Connected and syncing!",
+        "syncAll": "Server sync",
+        "pause": "Pause - ",
+        "play": "Play - ",
+        "seek": "Seek - "
     }
 }

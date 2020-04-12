@@ -56,15 +56,15 @@ function messageListener(tag, extraData = "") {
     //  Synchronize messages from socket
     switch (tag) {
         case tags["socketServerTags"]["pause"]:
-            videoTagManagerInstance.pauseVideo();
+            videoTagManagerInstance.pauseVideo(extraData);
             break;
 
         case tags["socketServerTags"]["play"]:
-            videoTagManagerInstance.playVideo();
+            videoTagManagerInstance.playVideo(extraData);
             break;
 
         case tags["socketServerTags"]["seek"]:
-            videoTagManagerInstance.seekVideo(extraData["seekTo"]);
+            videoTagManagerInstance.seekVideo(extraData["seekTo"], extraData["name"]);
             break;
 
         case tags["socketServerTags"]["getTime"]:

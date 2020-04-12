@@ -16,16 +16,16 @@ class VideoTagManager {
         this.currentTabId = tabArray[0].id;
     }
 
-    pauseVideo() {
-        this.emitToContentScript(tags["socketServerTags"]["pause"]);
+    pauseVideo(name) {
+        this.emitToContentScript(tags["socketServerTags"]["pause"], "", name);
     }
 
-    playVideo() {
-        this.emitToContentScript(tags["socketServerTags"]["play"]);
+    playVideo(name) {
+        this.emitToContentScript(tags["socketServerTags"]["play"], "", name);
     }
 
-    seekVideo(seekTo) {
-        this.emitToContentScript(tags["socketServerTags"]["seek"], seekTo);
+    seekVideo(seekTo, name) {
+        this.emitToContentScript(tags["socketServerTags"]["seek"], seekTo, name);
     }
 
     getTime() {
@@ -36,10 +36,11 @@ class VideoTagManager {
         this.emitToContentScript(tags["socketServerTags"]["syncAll"], time);
     }
 
-    emitToContentScript(tag, data = "") {
+    emitToContentScript(tag, data = "", name = "") {
         browser.tabs.sendMessage(this.currentTabId, {
             "tag": tag,
-            "data": data
+            "data": data,
+            "name": name
         });
     }
 }

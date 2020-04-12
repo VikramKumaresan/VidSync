@@ -16,6 +16,38 @@ if (videoTag) {
     checkIfAutoPlayEnabled();
 }
 
+//
+//      Message Box
+//
+
+//  Create message box
+const messageBox = document.createElement("div");
+messageBox.id = "messageBox";
+messageBox.style = "background-color: #e0e094; width: 15vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out;";
+messageBox.innerHTML = "<p id='message' style='margin:1em; font-size: 15px;'>Dummy Text</p>";
+
+//  Inject message box
+document.body.appendChild(messageBox);
+
+const successColor = '#64e986';
+const failureColor = '#ff726f';
+const infoColor = '#e0e094';
+
+const messageTag = messageBox.firstElementChild;
+
+//  Remove message onTimeout
+messageBoxTimeout = window.setTimeout(() => { messageBox.style.opacity = 0; }, 5000);
+
+function displayMessage(message, color) {
+    window.clearInterval(messageBoxTimeout);
+
+    messageTag.innerHTML = message;
+    messageBox.style.backgroundColor = color;
+    messageBox.style.opacity = 1;
+
+    messageBoxTimeout = window.setTimeout(() => { messageBox.style.opacity = 0; }, 5000);
+}
+
 //  Synchronize Call Flags
 let isPlayFromSocketExecution = false;
 let isPauseFromSocketExecution = false;
@@ -64,6 +96,7 @@ browser.runtime.onMessage.addListener((data) => {
             if (!videoTag.paused) {
                 isPauseFromSocketExecution = true;
                 videoTag.pause();
+                displayMessage(tags["messages"]["pause"] + data["name"], infoColor);
             }
             break;
 
@@ -77,13 +110,18 @@ browser.runtime.onMessage.addListener((data) => {
             else if (!videoTag.paused) {
                 return;
             }
+
             isPlayFromSocketExecution = true;
             videoTag.play();
+            displayMessage(tags["messages"]["play"] + data["name"], infoColor);
+
             break;
 
         case tags["socketServerTags"]["seek"]:
             isSeekFromSocketExecution = true;
             videoTag.currentTime = data["data"];
+
+            displayMessage(tags["messages"]["seek"] + data["name"], infoColor);
             break;
 
         case tags["socketServerTags"]["getTime"]:
@@ -98,6 +136,8 @@ browser.runtime.onMessage.addListener((data) => {
                 isPauseFromSocketExecution = true;
                 videoTag.pause();
             }
+
+            displayMessage(tags["messages"]["syncAll"], infoColor);
 
             isSeekFromSocketExecution = true;
             videoTag.currentTime = data["data"];
