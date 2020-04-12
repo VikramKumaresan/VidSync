@@ -77,6 +77,16 @@ class Room {
         this.#partialParticipants = Array();
     }
 
+    showRoomParticipants(res) {
+        var responseParticipants = Array();
+
+        this.#participants.forEach((participant) => {
+            responseParticipants.push(participant.name);
+        })
+
+        res.json({ "participants": responseParticipants });
+    }
+
     //  Synchronize method calls
     synchronizePlay(participant) {
         this.#synchronizerInstance.emitPlay(participant);

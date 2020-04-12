@@ -10,7 +10,7 @@ const server = http.createServer(app)
 const ws = require('ws');
 const wss = new ws.Server({ server: server });
 
-const config = require("./config.json");
+const config = require("./config");
 
 const roomClass = require("./src/room");
 const room = new roomClass(wss);
@@ -34,6 +34,10 @@ wss.on("error", (err) => {
 app.get("/flushRoom", (req, res) => {
     room.flushRoom();
     res.end();
+})
+
+app.get("/viewRoom", (req, res) => {
+    room.showRoomParticipants(res);
 })
 
 //  Server Initialization
