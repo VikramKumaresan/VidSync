@@ -27,21 +27,27 @@ async function getState() {
 //  Listen to messages
 browser.runtime.onMessage.addListener((data) => {
 
-    //  Error from background script
-    if (data["tag"] == tags["error"]["connectionError"]) {
-        showMessageInPopUp(tags["messages"]["cannotConnectServer"]);
-    }
-    //  Close from background script
-    else if (data["tag"] == tags["error"]["connectionClose"]) {
-        showMessageInPopUp(tags["messages"]["connectionClosedServer"]);
-    }
-    //  Connected to server from background script
-    else if (data["tag"] == tags["webSocketMessages"]["connectionOpen"]) {
-        showMessageInPopUp(tags["messages"]["connectedServer"]);
-    }
-    //  Updation failed from background script
-    else if (data["tag"] == tags["messages"]["updationServerFailed"]) {
-        showMessageInPopUp(tags["messages"]["updationServerFailed"] + data["extra"]);
+    switch (data["tag"]) {
+
+        //  Error from background script
+        case tags["error"]["connectionError"]:
+            showMessageInPopUp(tags["messages"]["cannotConnectServer"]);
+            break;
+
+        //  Close from background script
+        case tags["error"]["connectionClose"]:
+            showMessageInPopUp(tags["messages"]["connectionClosedServer"]);
+            break;
+
+        //  Connected to server from background script
+        case tags["webSocketMessages"]["connectionOpen"]:
+            showMessageInPopUp(tags["messages"]["connectedServer"]);
+            break;
+
+        //  Updation failed from background script
+        case tags["messages"]["updationServerFailed"]:
+            showMessageInPopUp(tags["messages"]["updationServerFailed"] + data["extra"]);
+            break;
     }
 
 });

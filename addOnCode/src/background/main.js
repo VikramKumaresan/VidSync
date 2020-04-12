@@ -6,65 +6,78 @@ const stateManagerInstance = new StateManager();
 //  Listen for messages
 browser.runtime.onMessage.addListener((data) => {
 
-    //  Get state from browser action script
-    if (data["tag"] == tags["popUpBackground"]["getState"]) {
-        return Promise.resolve(stateManagerInstance.getState());
-    }
-    //  Name from browser action script
-    else if (data["tag"] == tags["popUpBackground"]["update"]) {
+    switch (data["tag"]) {
 
-        //  Disconnect and release old instances
-        if (webSocketManagerInstance) {
-            this.releaseOldInstances();
-        }
+        //  Get state from browser action script
+        case tags["popUpBackground"]["getState"]:
+            return Promise.resolve(stateManagerInstance.getState());
 
-        videoTagManagerInstance = new VideoTagManager();
-        webSocketManagerInstance = new WebSocketManager(data["name"], data["url"], messageListener);
-        webSocketManagerInstance.connectToSocketServer();
+        //  Name from browser action script
+        case tags["popUpBackground"]["update"]:
+            //  Disconnect and release old instances
+            if (webSocketManagerInstance) {
+                this.releaseOldInstances();
+            }
 
-        stateManagerInstance.setState(tags["messages"]["connectingServer"]);
+            videoTagManagerInstance = new VideoTagManager();
+            webSocketManagerInstance = new WebSocketManager(data["name"], data["url"], messageListener);
+            webSocketManagerInstance.connectToSocketServer();
 
-        return Promise.resolve({ "result": true });
-    }
-    else if (data["tag"] == tags["contentBackground"]["windowClose"]) {
+            stateManagerInstance.setState(tags["messages"]["connectingServer"]);
+
+            return Promise.resolve({ "result": true });
+
         //  Tab changed url/closed
-        if (webSocketManagerInstance) {
-            this.releaseOldInstances();
-        }
+        case tags["contentBackground"]["windowClose"]:
+            if (webSocketManagerInstance) {
+                this.releaseOldInstances();
+            }
+            break;
+
+        //  Synchronize calls from content script
+        case tags["socketServerTags"]["pause"]:
+        case tags["socketServerTags"]["play"]:
+            webSocketManagerInstance.sendMessageToServer(data);
+            break;
+
+        case tags["socketServerTags"]["seek"]:
+            webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "seekTo": data["extraData"] });
+            break;
+
+        case tags["socketServerTags"]["getTime"]:
+            webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "currentTime": data["extraData"] });
+            break;
     }
-    //  Synchronize calls from content script
-    else if ((data["tag"] == tags["socketServerTags"]["pause"]) || (data["tag"] == tags["socketServerTags"]["play"])) {
-        webSocketManagerInstance.sendMessageToServer(data);
-    }
-    else if (data["tag"] == tags["socketServerTags"]["seek"]) {
-        webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "seekTo": data["extraData"] });
-    }
-    else if (data["tag"] == tags["socketServerTags"]["getTime"]) {
-        webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "currentTime": data["extraData"] });
-    }
+
 });
 
 //  From socketManager
 function messageListener(tag, extraData = "") {
     //  Synchronize messages from socket
-    if (tag == tags["socketServerTags"]["pause"]) {
-        videoTagManagerInstance.pauseVideo();
-    }
-    else if (tag == tags["socketServerTags"]["play"]) {
-        videoTagManagerInstance.playVideo();
-    }
-    else if (tag == tags["socketServerTags"]["seek"]) {
-        videoTagManagerInstance.seekVideo(extraData["seekTo"]);
-    }
-    else if (tag == tags["socketServerTags"]["getTime"]) {
-        videoTagManagerInstance.getTime();
-    }
-    else if (tag == tags["socketServerTags"]["syncAll"]) {
-        videoTagManagerInstance.sync(extraData);
-    }
-    //  Other messages from socket
-    else {
-        emitMessageToPopupScript(tag, extraData)
+    switch (tag) {
+        case tags["socketServerTags"]["pause"]:
+            videoTagManagerInstance.pauseVideo();
+            break;
+
+        case tags["socketServerTags"]["play"]:
+            videoTagManagerInstance.playVideo();
+            break;
+
+        case tags["socketServerTags"]["seek"]:
+            videoTagManagerInstance.seekVideo(extraData["seekTo"]);
+            break;
+
+        case tags["socketServerTags"]["getTime"]:
+            videoTagManagerInstance.getTime();
+            break;
+
+        case tags["socketServerTags"]["syncAll"]:
+            videoTagManagerInstance.sync(extraData);
+            break;
+
+        //  Other messages from socket
+        default:
+            emitMessageToPopupScript(tag, extraData)
     }
 }
 

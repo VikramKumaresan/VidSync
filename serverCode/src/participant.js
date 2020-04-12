@@ -24,30 +24,38 @@ class Participant {
         this.socket.on("message", (message) => {
             const messageObj = JSON.parse(message);
 
-            //  Participant detail updation
-            if (messageObj["tag"] == "update") {
-                this.name = messageObj["name"];
-                this.videoSrc = messageObj["videoSrc"];
-                const result = roomInstance.updateParticipant(this);
+            switch (messageObj["tag"]) {
 
-                //  Send updation status to socket
-                this.socket.send(createResponse("update", result));
-            }
-            //  Participant seek
-            else if (messageObj["tag"] == "seek") {
-                roomInstance.synchronizeSeek(this, messageObj["seekTo"]);
-            }
-            //  Participant pause
-            else if (messageObj["tag"] == "pause") {
-                roomInstance.synchronizePause(this);
-            }
-            //  Participant play
-            else if (messageObj["tag"] == "play") {
-                roomInstance.synchronizePlay(this);
-            }
-            //  Leader currentTime
-            else if (messageObj["tag"] == "getTime") {
-                roomInstance.syncAll(messageObj["currentTime"]);
+                //  Participant detail updation
+                case "update":
+                    this.name = messageObj["name"];
+                    this.videoSrc = messageObj["videoSrc"];
+                    const result = roomInstance.updateParticipant(this);
+
+                    //  Send updation status to socket
+                    this.socket.send(createResponse("update", result));
+                    break;
+
+                //  Participant seek
+                case "seek":
+                    roomInstance.synchronizeSeek(this, messageObj["seekTo"]);
+                    break;
+
+                //  Participant pause
+                case "pause":
+                    roomInstance.synchronizePause(this);
+                    break;
+
+                //  Participant play
+                case "play":
+                    roomInstance.synchronizePlay(this);
+                    break;
+
+                //  Leader currentTime
+                case "getTime":
+                    roomInstance.syncAll(messageObj["currentTime"]);
+                    break;
+
             }
 
         })

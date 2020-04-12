@@ -26,76 +26,83 @@ let wasBuffering = false;
 //  Listen for messages
 browser.runtime.onMessage.addListener((data) => {
 
-    //  Check if video tag present/accessible
-    if (data["tag"] == tags["popUpContent"]["videoTag"]) {
-        if (!videoTag) {
-            return Promise.resolve({ "result": false, "tag": tags["messages"]["noCapturableTags"] });
-        }
-        else if (!isAutoPlayAllowed) {
+    switch (data["tag"]) {
 
-            //  Recheck if autoPlay not enabled
-            return new Promise(async (resolve) => {
-                try {
-                    await videoTag.play();
-                    isAutoPlayAllowed = true;
-                    videoTag.pause();
+        //  Check if video tag present/accessible
+        case tags["popUpContent"]["videoTag"]:
+            if (!videoTag) {
+                return Promise.resolve({ "result": false, "tag": tags["messages"]["noCapturableTags"] });
+            }
+            else if (!isAutoPlayAllowed) {
 
-                    attachListenersToVideoTag();
+                //  Recheck if autoPlay not enabled
+                return new Promise(async (resolve) => {
+                    try {
+                        await videoTag.play();
+                        isAutoPlayAllowed = true;
+                        videoTag.pause();
 
-                    return resolve({ "result": true, "tag": tags["popUpContent"]["reloadPopUp"] })
-                } catch (e) {
-                    return resolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] })
-                }
-            });
+                        attachListenersToVideoTag();
 
-        }
-        else if (videoTag.readyState == videoTag.HAVE_NOTHING) {
+                        return resolve({ "result": true, "tag": tags["popUpContent"]["reloadPopUp"] })
+                    } catch (e) {
+                        return resolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] })
+                    }
+                });
+
+            }
+            else if (videoTag.readyState == videoTag.HAVE_NOTHING) {
+                videoTag.play();
+                return Promise.resolve({ "result": false, "tag": tags["messages"]["notReadyState"] });
+            }
+
+            return Promise.resolve({ "result": true, "url": document.URL });
+
+        //  Synchronize calls
+        case tags["socketServerTags"]["pause"]:
+            //  If not paused (Callback will not be triggered if pause on paused)
+            if (!videoTag.paused) {
+                isPauseFromSocketExecution = true;
+                videoTag.pause();
+            }
+            break;
+
+        case tags["socketServerTags"]["play"]:
+            //  Video buffering
+            if (videoTag.readyState < videoTag.HAVE_FUTURE_DATA) {
+                sendMessageToBackground(tags["socketServerTags"]["pause"]);
+                return;
+            }
+            //  Already playing (Callback will not be triggered)
+            else if (!videoTag.paused) {
+                return;
+            }
+            isPlayFromSocketExecution = true;
             videoTag.play();
-            return Promise.resolve({ "result": false, "tag": tags["messages"]["notReadyState"] });
-        }
+            break;
 
-        return Promise.resolve({ "result": true, "url": document.URL });
-    }
-    //  Synchronize calls
-    else if (data["tag"] == tags["socketServerTags"]["pause"]) {
-        //  If not paused (Callback will not be triggered if pause on paused)
-        if (!videoTag.paused) {
-            isPauseFromSocketExecution = true;
-            videoTag.pause();
-        }
-    }
-    else if (data["tag"] == tags["socketServerTags"]["play"]) {
-        //  Video buffering
-        if (videoTag.readyState < videoTag.HAVE_FUTURE_DATA) {
-            sendMessageToBackground(tags["socketServerTags"]["pause"]);
-            return;
-        }
-        //  Already playing (Callback will not be triggered)
-        else if (!videoTag.paused) {
-            return;
-        }
-        isPlayFromSocketExecution = true;
-        videoTag.play();
-    }
-    else if (data["tag"] == tags["socketServerTags"]["seek"]) {
-        isSeekFromSocketExecution = true;
-        videoTag.currentTime = data["data"];
-    }
-    else if (data["tag"] == tags["socketServerTags"]["getTime"]) {
-        sendMessageToBackground(tags["socketServerTags"]["getTime"], videoTag.currentTime);
-    }
-    else if (data["tag"] == tags["socketServerTags"]["syncAll"]) {
-        //  First pauses. Then Syncs
+        case tags["socketServerTags"]["seek"]:
+            isSeekFromSocketExecution = true;
+            videoTag.currentTime = data["data"];
+            break;
 
-        //  If not paused (Callback will not be triggered if pause on paused)
-        if (!videoTag.paused) {
-            isPauseFromSocketExecution = true;
-            videoTag.pause();
-        }
+        case tags["socketServerTags"]["getTime"]:
+            sendMessageToBackground(tags["socketServerTags"]["getTime"], videoTag.currentTime);
+            break;
 
-        isSeekFromSocketExecution = true;
-        videoTag.currentTime = data["data"];
+        case tags["socketServerTags"]["syncAll"]:
+            //  First pauses. Then Syncs
+
+            //  If not paused (Callback will not be triggered if pause on paused)
+            if (!videoTag.paused) {
+                isPauseFromSocketExecution = true;
+                videoTag.pause();
+            }
+
+            isSeekFromSocketExecution = true;
+            videoTag.currentTime = data["data"];
     }
+
 });
 
 //  Fired on tab close/url change

@@ -64,31 +64,40 @@ class WebSocketManager {
     }
 
     onMessageListener(context, data) {
-        //  Check if server updation failed
-        if (data["tag"] == tags["socketServerTags"]["update"]) {
-            if (!data["message"]["isUpdate"]) {
-                context.onMessageBackgroundListener(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
-            }
-        }
-        else if (data["tag"] == tags["socketServerTags"]["pause"]) {
-            context.onMessageBackgroundListener(tags["socketServerTags"]["pause"], data["name"]);
-        }
-        else if (data["tag"] == tags["socketServerTags"]["play"]) {
-            context.onMessageBackgroundListener(tags["socketServerTags"]["play"], data["name"]);
-        }
-        else if (data["tag"] == tags["socketServerTags"]["seek"]) {
-            context.onMessageBackgroundListener(tags["socketServerTags"]["seek"],
-                {
-                    "name": data["name"],
-                    "seekTo": data["message"]
+
+        switch (data["tag"]) {
+
+            //  Check if server updation failed
+            case tags["socketServerTags"]["update"]:
+                if (!data["message"]["isUpdate"]) {
+                    context.onMessageBackgroundListener(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
                 }
-            );
-        }
-        else if (data["tag"] == tags["socketServerTags"]["getTime"]) {
-            context.onMessageBackgroundListener(tags["socketServerTags"]["getTime"]);
-        }
-        else if (data["tag"] == tags["socketServerTags"]["syncAll"]) {
-            context.onMessageBackgroundListener(tags["socketServerTags"]["syncAll"], data["message"]);
+                break;
+
+            case tags["socketServerTags"]["pause"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["pause"], data["name"]);
+                break;
+
+            case tags["socketServerTags"]["play"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["play"], data["name"]);
+                break;
+
+            case tags["socketServerTags"]["seek"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["seek"],
+                    {
+                        "name": data["name"],
+                        "seekTo": data["message"]
+                    }
+                );
+                break;
+
+            case tags["socketServerTags"]["getTime"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["getTime"]);
+                break;
+
+            case tags["socketServerTags"]["syncAll"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["syncAll"], data["message"]);
+                break;
         }
     }
 

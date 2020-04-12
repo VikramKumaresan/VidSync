@@ -28,26 +28,33 @@ class StateManager {
     setState(tag, extraData = "") {
 
         //  All possible states
-        if (tag == tags["messages"]["connectingServer"]) {
-            this.isError = false;
-            this.message = tag;
+        switch (tag) {
+            case tags["messages"]["connectingServer"]:
+                this.isError = false;
+                this.message = tag;
+                break;
+
+            case tags["webSocketMessages"]["connectionOpen"]:
+                this.isError = false;
+                this.message = tags["messages"]["connectedServer"];
+                break;
+
+            case tags["error"]["connectionClose"]:
+                this.isError = true;
+                this.message = tags["messages"]["connectionClosedServer"];
+                break;
+
+            case tags["error"]["connectionError"]:
+                this.isError = true;
+                this.message = tags["messages"]["cannotConnectServer"];
+                break;
+
+            case tags["messages"]["updationServerFailed"]:
+                this.isError = true;
+                this.message = tags["messages"]["updationServerFailed"] + extraData;
+                break;
         }
-        else if (tag == tags["webSocketMessages"]["connectionOpen"]) {
-            this.isError = false;
-            this.message = tags["messages"]["connectedServer"];
-        }
-        else if (tag == tags["error"]["connectionClose"]) {
-            this.isError = true;
-            this.message = tags["messages"]["connectionClosedServer"];
-        }
-        else if (tag == tags["error"]["connectionError"]) {
-            this.isError = true;
-            this.message = tags["messages"]["cannotConnectServer"];
-        }
-        else if (tag == tags["messages"]["updationServerFailed"]) {
-            this.isError = true;
-            this.message = tags["messages"]["updationServerFailed"] + extraData;
-        }
+
     }
 
     refreshState() {
