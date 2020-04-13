@@ -13,7 +13,7 @@ const wss = new ws.Server({ server: server });
 const config = require("./config");
 
 const roomClass = require("./src/room");
-const room = new roomClass(wss);
+const room = new roomClass();
 
 //
 //  WebSocket Events

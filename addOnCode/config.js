@@ -1,3 +1,3 @@
 config = {
-    "socketServerUrl": "ws://localhost:3000"
+    "socketServerUrl": "ws://pure-woodland-36760.herokuapp.com/"
 }

@@ -1,13 +1,12 @@
 const participantClass = require("./participant");
 const synchronizerClass = require("./synchronizer");
-const createResponse = require("./utils/createResponse");
 
 class Room {
     #partialParticipants;
     #participants;
     #synchronizerInstance;
 
-    constructor(wss) {
+    constructor() {
         this.#participants = Array();
         this.#partialParticipants = Array();
         this.#synchronizerInstance = new synchronizerClass(this.#participants);
@@ -71,7 +70,7 @@ class Room {
         //  Refresh full room
 
         this.#participants.forEach((participant) => {
-            participant.socket.send(createResponse("message", "Room has been closed!"));
+            participant.socket.close();
         })
         this.#participants = Array();
         this.#partialParticipants = Array();
