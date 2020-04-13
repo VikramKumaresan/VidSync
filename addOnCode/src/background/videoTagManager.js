@@ -28,12 +28,18 @@ class VideoTagManager {
         this.emitToContentScript(tags["socketServerTags"]["seek"], seekTo, name);
     }
 
-    getTime() {
-        this.emitToContentScript(tags["socketServerTags"]["getTime"]);
+    //  getTime -         Triggered when new participant joins [Sync causes pause to all to match states]
+    //  getTimeAutoSync - Triggered by auto server sync [Sync doesn't pause as states already matched]
+    getTime(tag) {
+        this.emitToContentScript(tag);
     }
 
     sync(time) {
         this.emitToContentScript(tags["socketServerTags"]["syncAll"], time);
+    }
+
+    syncNewJoin(time) {
+        this.emitToContentScript(tags["socketServerTags"]["syncAllNewJoin"], time);
     }
 
     displayMessage(tag, extraData) {

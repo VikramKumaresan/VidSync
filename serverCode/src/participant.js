@@ -51,8 +51,13 @@ class Participant {
                     roomInstance.synchronizePlay(this);
                     break;
 
-                //  Leader currentTime
+                //  Leader currentTime for sync with new participant
                 case "getTime":
+                    roomInstance.syncAllNewJoin(messageObj["currentTime"]);
+                    break;
+
+                //  Leader currentTime for auto sync
+                case "getTimeAutoSync":
                     roomInstance.syncAll(messageObj["currentTime"]);
                     break;
 

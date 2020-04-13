@@ -64,7 +64,6 @@ class WebSocketManager {
     }
 
     onMessageListener(context, data) {
-
         switch (data["tag"]) {
 
             //  Check if server updation failed
@@ -95,8 +94,16 @@ class WebSocketManager {
                 context.onMessageBackgroundListener(tags["socketServerTags"]["getTime"]);
                 break;
 
+            case tags["socketServerTags"]["getTimeAutoSync"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["getTimeAutoSync"]);
+                break;
+
             case tags["socketServerTags"]["syncAll"]:
                 context.onMessageBackgroundListener(tags["socketServerTags"]["syncAll"], data["message"]);
+                break;
+
+            case tags["socketServerTags"]["syncAllNewJoin"]:
+                context.onMessageBackgroundListener(tags["socketServerTags"]["syncAllNewJoin"], data["message"]);
                 break;
         }
     }

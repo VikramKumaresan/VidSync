@@ -33,7 +33,7 @@ class Room {
                 this.#partialParticipants.splice(i, 1);
 
                 //  Helps sync new participant to leader
-                this.#synchronizerInstance.startSyncAll();
+                this.#synchronizerInstance.startSyncAll(true);
 
                 return { "isUpdate": true };
             }
@@ -96,7 +96,11 @@ class Room {
     synchronizeSeek(participant, seekTo) {
         this.#synchronizerInstance.emitSeek(participant, seekTo);
     }
-    //  Syncs all participants to leader time 
+    //  Syncs all participants + new participant to leader time 
+    syncAllNewJoin(leaderTime) {
+        this.#synchronizerInstance.syncAllNewJoin(leaderTime);
+    }
+    //  Syncs all participants to leader time (Auto sync)
     syncAll(leaderTime) {
         this.#synchronizerInstance.syncAll(leaderTime);
     }

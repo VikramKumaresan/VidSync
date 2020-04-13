@@ -142,10 +142,13 @@ browser.runtime.onMessage.addListener((data) => {
             break;
 
         case tags["socketServerTags"]["getTime"]:
-            sendMessageToBackground(tags["socketServerTags"]["getTime"], videoTag.currentTime);
+        case tags["socketServerTags"]["getTimeAutoSync"]:
+            sendMessageToBackground(data["tag"], videoTag.currentTime);
             break;
 
-        case tags["socketServerTags"]["syncAll"]:
+
+        case tags["socketServerTags"]["syncAllNewJoin"]:
+
             //  First pauses. Then Syncs
 
             //  If not paused (Callback will not be triggered if pause on paused)
@@ -158,6 +161,15 @@ browser.runtime.onMessage.addListener((data) => {
 
             isSeekFromSocketExecution = true;
             videoTag.currentTime = data["data"];
+
+        case tags["socketServerTags"]["syncAll"]:
+            //  Auto sync (Should be within 4 seconds of leader time)
+            if (Math.abs(videoTag.currentTime - parseFloat(data["data"])) > 4) {
+                displayMessage(tags["messages"]["syncAll"], infoColor);
+
+                isSeekFromSocketExecution = true;
+                videoTag.currentTime = data["data"];
+            }
     }
 
 });
