@@ -20,6 +20,11 @@ tags = {
     "webSocketMessages": {
         "connectionOpen": 3
     },
+    //  When changes to tab occur
+    "tabMonitorTags": {
+        "tabClosed": "tabClosed",
+        "tabUrlChange": "tabUrlChange"
+    },
     //  When sending to server
     "socketServerTags": {
         "update": "update",

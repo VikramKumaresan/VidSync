@@ -1,6 +1,7 @@
 //  Initializations
 let videoTagManagerInstance;
 let webSocketManagerInstance;
+let tabMonitorInstance;
 const stateManagerInstance = new StateManager();
 
 //  Listen for messages
@@ -20,19 +21,13 @@ browser.runtime.onMessage.addListener((data) => {
             }
 
             videoTagManagerInstance = new VideoTagManager();
+            tabMonitorInstance = new TabMonitor(messageListener);
             webSocketManagerInstance = new WebSocketManager(data["name"], data["url"], messageListener);
             webSocketManagerInstance.connectToSocketServer();
 
             stateManagerInstance.setState(tags["messages"]["connectingServer"]);
 
             return Promise.resolve({ "result": true });
-
-        //  Tab changed url/closed
-        case tags["contentBackground"]["windowClose"]:
-            if (webSocketManagerInstance) {
-                this.releaseOldInstances();
-            }
-            break;
 
         //  Synchronize calls from content script
         case tags["socketServerTags"]["pause"]:
@@ -52,10 +47,19 @@ browser.runtime.onMessage.addListener((data) => {
 
 });
 
-//  From socketManager
+//  From socketManager and tabMonitor
 function messageListener(tag, extraData = "") {
-    //  Synchronize messages from socket
+
     switch (tag) {
+        //  Tab monitor messages
+        case tags["tabMonitorTags"]["tabClosed"]:
+        case tags["tabMonitorTags"]["tabUrlChange"]:
+            if (webSocketManagerInstance) {
+                this.releaseOldInstances();
+            }
+            break;
+
+        //  Synchronize messages from socket
         case tags["socketServerTags"]["pause"]:
             videoTagManagerInstance.pauseVideo(extraData);
             break;
@@ -106,5 +110,6 @@ function releaseOldInstances() {
     webSocketManagerInstance.disconnectFromSocketServer();
     webSocketManagerInstance = null;
     videoTagManagerInstance = null;
+    tabMonitorInstance = null;
     stateManagerInstance.refreshState();
 }

@@ -174,11 +174,6 @@ browser.runtime.onMessage.addListener((data) => {
 
 });
 
-//  Fired on tab close/url change
-window.addEventListener("beforeunload", () => {
-    sendMessageToBackground(tags["contentBackground"]["windowClose"]);
-})
-
 function sendMessageToBackground(tag, extraData = "") {
     browser.runtime.sendMessage({
         "tag": tag,
