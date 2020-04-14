@@ -41,6 +41,7 @@ browser.runtime.onMessage.addListener((data) => {
 
         case tags["socketServerTags"]["getTime"]:
         case tags["socketServerTags"]["getTimeAutoSync"]:
+        case tags["socketServerTags"]["updateTime"]:
             webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "currentTime": data["extraData"] });
             break;
     }
@@ -74,6 +75,7 @@ function messageListener(tag, extraData = "") {
 
         case tags["socketServerTags"]["getTime"]:
         case tags["socketServerTags"]["getTimeAutoSync"]:
+        case tags["socketServerTags"]["updateTime"]:
             videoTagManagerInstance.getTime(tag);
             break;
 

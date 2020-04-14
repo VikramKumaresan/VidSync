@@ -34,7 +34,8 @@ tags = {
         "syncAll": "syncAll",
         "syncAllNewJoin": "syncAllNewJoin",
         "getTime": "getTime",
-        "getTimeAutoSync": "getTimeAutoSync"
+        "getTimeAutoSync": "getTimeAutoSync",
+        "updateTime": "updateTime"
     },
     "messages": {
         "noCapturableTags": "No capturable video sources available!",

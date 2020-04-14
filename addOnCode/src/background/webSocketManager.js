@@ -74,11 +74,8 @@ class WebSocketManager {
                 break;
 
             case tags["socketServerTags"]["pause"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["pause"], data["name"]);
-                break;
-
             case tags["socketServerTags"]["play"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["play"], data["name"]);
+                context.onMessageBackgroundListener(data["tag"], data["name"]);
                 break;
 
             case tags["socketServerTags"]["seek"]:
@@ -91,20 +88,17 @@ class WebSocketManager {
                 break;
 
             case tags["socketServerTags"]["getTime"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["getTime"]);
+            case tags["socketServerTags"]["getTimeAutoSync"]:
+            case tags["socketServerTags"]["updateTime"]:
+                context.onMessageBackgroundListener(data["tag"]);
                 break;
 
-            case tags["socketServerTags"]["getTimeAutoSync"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["getTimeAutoSync"]);
-                break;
 
             case tags["socketServerTags"]["syncAll"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["syncAll"], data["message"]);
+            case tags["socketServerTags"]["syncAllNewJoin"]:
+                context.onMessageBackgroundListener(data["tag"], data["message"]);
                 break;
 
-            case tags["socketServerTags"]["syncAllNewJoin"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["syncAllNewJoin"], data["message"]);
-                break;
         }
     }
 

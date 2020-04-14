@@ -4,6 +4,7 @@ class Participant {
     socket;
     videoSrc;
     name;
+    lastUpdatedPlaybackTime = null;
 
     constructor(socket, roomInstance) {
         this.socket = socket;
@@ -59,6 +60,11 @@ class Participant {
                 //  Leader currentTime for auto sync
                 case "getTimeAutoSync":
                     roomInstance.syncAll(messageObj["currentTime"]);
+                    break;
+
+                //  CurrentTime for auto update
+                case "updateTime":
+                    this.lastUpdatedPlaybackTime = messageObj["currentTime"];
                     break;
 
             }

@@ -143,6 +143,7 @@ browser.runtime.onMessage.addListener((data) => {
 
         case tags["socketServerTags"]["getTime"]:
         case tags["socketServerTags"]["getTimeAutoSync"]:
+        case tags["socketServerTags"]["updateTime"]:
             sendMessageToBackground(data["tag"], videoTag.currentTime);
             break;
 

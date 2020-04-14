@@ -1,15 +1,19 @@
 const participantClass = require("./participant");
 const synchronizerClass = require("./synchronizer");
+const AdminOperationsClass = require("./adminOperations");
 
 class Room {
     #partialParticipants;
     #participants;
+
     #synchronizerInstance;
+    #adminOperationsInstance;
 
     constructor() {
         this.#participants = Array();
         this.#partialParticipants = Array();
         this.#synchronizerInstance = new synchronizerClass(this.#participants);
+        this.#adminOperationsInstance = new AdminOperationsClass(this.#participants, this.#partialParticipants);
     }
 
     addParticipant(socket) {
@@ -66,24 +70,12 @@ class Room {
         return roomLeader.videoSrc;
     }
 
+    //  Admin Operations  
     flushRoom() {
-        //  Refresh full room
-
-        this.#participants.forEach((participant) => {
-            participant.socket.close();
-        })
-        this.#participants = Array();
-        this.#partialParticipants = Array();
+        this.#adminOperationsInstance.flushRoom();
     }
-
     showRoomParticipants(res) {
-        var responseParticipants = Array();
-
-        this.#participants.forEach((participant) => {
-            responseParticipants.push(participant.name);
-        })
-
-        res.json({ "participants": responseParticipants });
+        this.#adminOperationsInstance.showRoomParticipants(res);
     }
 
     //  Synchronize method calls
