@@ -57,4 +57,30 @@ class TabMonitor {
         browser.tabs.onUpdated.removeListener(this.onTabUrlChangedListener);
         browser.tabs.onRemoved.removeListener(this.onTabRemovedListener);
     }
+
+    onTabUrlChangedListener = (changedTabId, changeInfo, tab) => {
+        if ((tab.url == undefined) || (changedTabId != this.currentTabId)) {
+            return;
+        }
+
+        if (!this.currentTabUrl) {
+            this.currentTabUrl = tab.url;
+            return;
+        }
+
+        if (this.currentTabUrl != tab.url) {
+            this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabUrlChange"]);
+        }
+    };
+
+    onTabRemovedListener = (changedTabId) => {
+        if (changedTabId == this.currentTabId) {
+            this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabClosed"]);
+        }
+    };
+
+    removeListeners() {
+        browser.tabs.onUpdated.removeListener(this.onTabUrlChangedListener);
+        browser.tabs.onRemoved.removeListener(this.onTabRemovedListener);
+    }
 }
