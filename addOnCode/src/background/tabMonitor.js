@@ -1,33 +1,17 @@
 class TabMonitor {
     currentTabId;
     currentTabUrl;
+    onMessageBackgroundListener;
 
     constructor(onMessageBackgroundListener) {
-        this.getCurrentTabId();
+        this.onMessageBackgroundListener = onMessageBackgroundListener;
+        this.initialize();
+    }
 
-        //  Set up listeners
-        browser.tabs.onUpdated.addListener((changedTabId, changeInfo, tab) => {
-            console.log(tab.url);
-            if (changedTabId != this.currentTabId) {
-                return;
-            }
-
-            //  tab.url may be undefined
-            if (tab.url && !this.currentTabUrl) {
-                this.currentTabUrl = tab.url;
-                return;
-            }
-
-            if (this.currentTabUrl != tab.url) {
-                onMessageBackgroundListener(tags["tabMonitorTags"]["tabUrlChange"]);
-            }
-        });
-
-        browser.tabs.onRemoved.addListener((changedTabId) => {
-            if (changedTabId == this.currentTabId) {
-                onMessageBackgroundListener(tags["tabMonitorTags"]["tabClosed"]);
-            }
-        })
+    async initialize() {
+        await this.getCurrentTabId();
+        browser.tabs.onUpdated.addListener(this.onTabUrlChangedListener, { "properties": ["title"], "tabId": this.currentTabId });
+        browser.tabs.onRemoved.addListener(this.onTabRemovedListener)
     }
 
     async getCurrentTabId() {
@@ -38,5 +22,23 @@ class TabMonitor {
         });
 
         this.currentTabId = tabArray[0].id;
+        this.currentTabUrl = tabArray[0].url;
+    }
+
+    onTabUrlChangedListener = (changedTabId, changeInfo, tab) => {
+        if (this.currentTabUrl != tab.url) {
+            this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabUrlChange"]);
+        }
+    };
+
+    onTabRemovedListener = (changedTabId) => {
+        if (changedTabId == this.currentTabId) {
+            this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabClosed"]);
+        }
+    };
+
+    removeListeners() {
+        browser.tabs.onUpdated.removeListener(this.onTabUrlChangedListener);
+        browser.tabs.onRemoved.removeListener(this.onTabRemovedListener);
     }
 }

@@ -17,7 +17,7 @@ browser.runtime.onMessage.addListener((data) => {
         case tags["popUpBackground"]["update"]:
             //  Disconnect and release old instances
             if (webSocketManagerInstance) {
-                this.releaseOldInstances();
+                releaseOldInstances();
             }
 
             videoTagManagerInstance = new VideoTagManager();
@@ -56,7 +56,7 @@ function messageListener(tag, extraData = "") {
         case tags["tabMonitorTags"]["tabClosed"]:
         case tags["tabMonitorTags"]["tabUrlChange"]:
             if (webSocketManagerInstance) {
-                this.releaseOldInstances();
+                releaseOldInstances();
             }
             break;
 
@@ -111,7 +111,11 @@ async function emitMessageToPopupScript(tag, extraData = "") {
 function releaseOldInstances() {
     webSocketManagerInstance.disconnectFromSocketServer();
     webSocketManagerInstance = null;
+
     videoTagManagerInstance = null;
+
+    tabMonitorInstance.removeListeners();
     tabMonitorInstance = null;
+
     stateManagerInstance.refreshState();
 }
