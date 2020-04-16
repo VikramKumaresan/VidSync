@@ -1,6 +1,6 @@
 class VideoTagManager {
-
-    currentTabId;
+    //  Instance Attributes
+    //currentTabId;
 
     constructor() {
         this.getCurrentTabId();

@@ -41,7 +41,7 @@ messageBoxTimeout = window.setTimeout(() => { messageBox.style.opacity = 0; }, 5
 function displayMessage(message, color) {
     window.clearInterval(messageBoxTimeout);
 
-    messageTag.innerHTML = message;
+    messageTag.textContent = message;
     messageBox.style.backgroundColor = color;
     messageBox.style.opacity = 1;
 

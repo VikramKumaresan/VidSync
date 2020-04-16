@@ -1,18 +1,20 @@
 class WebSocketManager {
-    name;
-    videoSrc;
-    socket;
-    onMessageBackgroundListener;
+    //      Instance Attributes
+    //  name;
+    //  videoSrc;
+    //  socket;
+    //  onMessageBackgroundListener;
 
-    //
-    //  onClose fired immediately after onError. Helps check and give meaningful error
-    //
-    isCannotConnect = false;
+    //  isCannotConnect
 
     constructor(name, src, listener) {
         this.name = name;
         this.videoSrc = src;
         this.onMessageBackgroundListener = listener;
+        this.socket = null;
+
+        //  onClose fired immediately after onError. Helps check and give meaningful error
+        this.isCannotConnect = false;
     }
 
     connectToSocketServer() {

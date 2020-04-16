@@ -67,7 +67,7 @@ async function sendDataToBackground() {
 //  Hides form and displays message
 function showMessageInPopUp(message) {
     const messageTag = document.getElementById("errorMessage");
-    messageTag.innerHTML = message;
+    messageTag.textContent = message;
     messageTag.style.display = "block";
 
     document.getElementById("form").style.display = "none";

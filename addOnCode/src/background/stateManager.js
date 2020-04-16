@@ -3,8 +3,9 @@
 //
 
 class StateManager {
-    isError;
-    message;
+    //      Instance Attributes
+    //  isError;
+    //  message;
 
     constructor() {
         this.refreshState();

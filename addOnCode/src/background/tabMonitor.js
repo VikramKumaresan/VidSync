@@ -1,10 +1,26 @@
 class TabMonitor {
-    currentTabId;
-    currentTabUrl;
-    onMessageBackgroundListener;
+    //      Instance Attributes
+    //  currentTabId;
+    //  currentTabUrl;
+    //  onMessageBackgroundListener;
+
+    //  onTabUrlChangedListener
+    //  onTabRemovedListener
 
     constructor(onMessageBackgroundListener) {
         this.onMessageBackgroundListener = onMessageBackgroundListener;
+
+        this.onTabUrlChangedListener = (changedTabId, changeInfo, tab) => {
+            if (this.currentTabUrl != tab.url) {
+                this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabUrlChange"]);
+            }
+        };
+        this.onTabRemovedListener = (changedTabId) => {
+            if (changedTabId == this.currentTabId) {
+                this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabClosed"]);
+            }
+        };
+
         this.initialize();
     }
 
@@ -24,18 +40,6 @@ class TabMonitor {
         this.currentTabId = tabArray[0].id;
         this.currentTabUrl = tabArray[0].url;
     }
-
-    onTabUrlChangedListener = (changedTabId, changeInfo, tab) => {
-        if (this.currentTabUrl != tab.url) {
-            this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabUrlChange"]);
-        }
-    };
-
-    onTabRemovedListener = (changedTabId) => {
-        if (changedTabId == this.currentTabId) {
-            this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabClosed"]);
-        }
-    };
 
     removeListeners() {
         browser.tabs.onUpdated.removeListener(this.onTabUrlChangedListener);
