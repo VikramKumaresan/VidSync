@@ -19,8 +19,8 @@ class AdminOperations {
         this.#participants.forEach((participant) => {
             participant.socket.close();
         })
-        this.#participants = Array();
-        this.#partialParticipants = Array();
+        this.#participants.length = 0;
+        this.#partialParticipants.length = 0;
     }
 
     showRoomParticipants(res) {
