@@ -15,7 +15,7 @@ class Synchronizer {
         if (this.#participants.length <= 1) {
             return;
         }
-        let leader = this.#participants[0];
+        const leader = this.#participants[0];
 
         if (isNewJoin) {
             leader.socket.send(createResponse("getTime", ""));
@@ -27,41 +27,32 @@ class Synchronizer {
 
     //  Syncs all participants to time. Forces pause state [To match new participant state]
     syncAllNewJoin(time) {
-        this.#participants.forEach((participant) => {
-            participant.socket.send(createResponse("syncAllNewJoin", time));
-        });
+        this.emitSync("syncAllNewJoin", time);
     }
-
     syncAll(time) {
+        this.emitSync("syncAll", time);
+    }
+    emitSync(tag, time) {
         this.#participants.forEach((participant) => {
-            participant.socket.send(createResponse("syncAll", time));
+            participant.socket.send(createResponse(tag, time));
         });
     }
 
     emitPause(fromParticipant) {
-        this.#participants.forEach((participant) => {
-            if (participant == fromParticipant) {
-                return;
-            }
-            participant.socket.send(createResponse("pause", "", fromParticipant.name));
-        });
+        this.emitOperation("pause", fromParticipant);
     }
-
     emitPlay(fromParticipant) {
-        this.#participants.forEach((participant) => {
-            if (participant == fromParticipant) {
-                return;
-            }
-            participant.socket.send(createResponse("play", "", fromParticipant.name));
-        });
+        this.emitOperation("play", fromParticipant);
     }
-
     emitSeek(fromParticipant, seekTo) {
+        this.emitOperation("seek", fromParticipant, seekTo);
+    }
+    emitOperation(tag, fromParticipant, seekTo = "") {
         this.#participants.forEach((participant) => {
             if (participant == fromParticipant) {
                 return;
             }
-            participant.socket.send(createResponse("seek", seekTo, fromParticipant.name));
+            participant.socket.send(createResponse(tag, seekTo, fromParticipant.name));
         });
     }
 

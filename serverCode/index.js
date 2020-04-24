@@ -40,7 +40,9 @@ app.get("/viewRoom", (req, res) => {
     room.showRoomParticipants(res);
 })
 
+//
 //  Server Initialization
+//
 server.listen(config["serverPort"], () => {
     console.log("Listening on port " + config["serverPort"] + "...");
 })
