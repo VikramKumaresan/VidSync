@@ -1,19 +1,16 @@
+/*
+ * 
+ * Content script to access and manipulate video tag on webpage.
+ *
+*/
+
 const videoTag = document.getElementsByTagName("video")[0];
 
 let isAutoPlayAllowed = false;
 
 //  Check if auto play allowed
 if (videoTag) {
-    checkIfAutoPlayEnabled = async () => {
-        try {
-            await videoTag.play();
-            isAutoPlayAllowed = true;
-            videoTag.pause();
-
-            attachListenersToVideoTag();
-        } catch (e) { }
-    }
-    checkIfAutoPlayEnabled();
+    checkIfAutoPlayEnabled(null, () => { }, () => { });
 }
 
 //
@@ -23,7 +20,7 @@ if (videoTag) {
 //  Create message box
 const messageBox = document.createElement("div");
 messageBox.id = "messageBox";
-messageBox.style = "background-color: #e0e094; width: 15vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out; opacity: 0;";
+messageBox.style = "background-color: #e0e094; width: 15vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out; opacity: 0; z-index:9999";
 messageBox.innerHTML = "<p id='message' style='margin:1em; font-size: 15px;'>Hello!</p>";
 
 //  Inject message box
@@ -54,8 +51,9 @@ let isPauseFromSocketExecution = false;
 let isSeekFromSocketExecution = false;
 let wasBuffering = false;
 
-
-//  Listen for messages
+//
+//  Listen for messages from background scripts
+//
 browser.runtime.onMessage.addListener((data) => {
 
     switch (data["tag"]) {
@@ -68,21 +66,16 @@ browser.runtime.onMessage.addListener((data) => {
             else if (!isAutoPlayAllowed) {
 
                 //  Recheck if autoPlay not enabled
-                return new Promise(async (resolve) => {
-                    try {
-                        await videoTag.play();
-                        isAutoPlayAllowed = true;
-                        videoTag.pause();
-
-                        attachListenersToVideoTag();
-
-                        return resolve({ "result": true, "tag": tags["popUpContent"]["reloadPopUp"] })
-                    } catch (e) {
-                        return resolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] })
-                    }
-                });
+                return new Promise((resolve) => {
+                    checkIfAutoPlayEnabled(
+                        resolve,
+                        (promiseResolve) => { return promiseResolve({ "result": true, "tag": tags["popUpContent"]["reloadPopUp"] }) },
+                        (promiseResolve) => { return promiseResolve({ "result": false, "tag": tags["messages"]["noAutoPlay"] }) }
+                    );
+                })
 
             }
+            //  Nothing buffered yet
             else if (videoTag.readyState == videoTag.HAVE_NOTHING) {
                 videoTag.play();
                 return Promise.resolve({ "result": false, "tag": tags["messages"]["notReadyState"] });
@@ -107,7 +100,7 @@ browser.runtime.onMessage.addListener((data) => {
             displayMessage(tags["messages"]["updationServerFailed"] + data["data"], failureColor);
             break;
 
-        //  Synchronize calls
+        //  Video tag operation calls
         case tags["socketServerTags"]["pause"]:
             //  If not paused (Callback will not be triggered if pause on paused)
             if (!videoTag.paused) {
@@ -141,6 +134,7 @@ browser.runtime.onMessage.addListener((data) => {
             displayMessage(tags["messages"]["seek"] + data["name"], infoColor);
             break;
 
+        //  Video tag sync calls
         case tags["socketServerTags"]["getTime"]:
         case tags["socketServerTags"]["getTimeAutoSync"]:
         case tags["socketServerTags"]["updateTime"]:
@@ -175,13 +169,9 @@ browser.runtime.onMessage.addListener((data) => {
 
 });
 
-function sendMessageToBackground(tag, extraData = "") {
-    browser.runtime.sendMessage({
-        "tag": tag,
-        "extraData": extraData
-    });
-}
-
+//
+//  Video tag event listener
+//
 function attachListenersToVideoTag() {
 
     videoTag.onplay = () => {
@@ -222,4 +212,27 @@ function attachListenersToVideoTag() {
         wasBuffering = false;
         sendMessageToBackground(tags["socketServerTags"]["play"]);
     }
+}
+
+//
+//  Utility functions
+//
+function sendMessageToBackground(tag, extraData = "") {
+    browser.runtime.sendMessage({
+        "tag": tag,
+        "extraData": extraData
+    });
+}
+
+async function checkIfAutoPlayEnabled(promiseResolve, onSuccessCallback, onFailureCallback) {
+    try {
+        await videoTag.play();
+        isAutoPlayAllowed = true;
+        videoTag.pause();
+
+        attachListenersToVideoTag();
+    } catch (e) {
+        onFailureCallback(promiseResolve);
+    }
+    onSuccessCallback(promiseResolve);
 }
