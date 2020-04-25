@@ -1,3 +1,12 @@
+/*
+ * 
+ *  Class to connect, disconnect and emit messages to the websocket server.
+ *
+ *  New webSocketManager object required for each sync as name and video source are stored in object. They can
+ *  change per sync
+ * 
+*/
+
 class WebSocketManager {
     //      Instance Attributes
     //  name;
@@ -37,12 +46,14 @@ class WebSocketManager {
         this.socket.close();
     }
 
+    //
+    //  Listeners
+    //
     onErrorListener(context) {
         //  Can't connect to server
         context.onMessageBackgroundListener(tags["error"]["connectionError"]);
         this.isCannotConnect = true;
     }
-
     onCloseListener(context) {
         if (this.isCannotConnect) {
             this.isCannotConnect = false;
@@ -52,7 +63,6 @@ class WebSocketManager {
         //  Connection to server closed
         context.onMessageBackgroundListener(tags["error"]["connectionClose"]);
     }
-
     onOpenListener(context) {
         //  Send participant details
         const message = {
@@ -64,7 +74,6 @@ class WebSocketManager {
 
         context.onMessageBackgroundListener(tags["webSocketMessages"]["connectionOpen"]);
     }
-
     onMessageListener(context, data) {
         switch (data["tag"]) {
 
@@ -104,6 +113,9 @@ class WebSocketManager {
         }
     }
 
+    //
+    //  Utility functions
+    //
     parseServerMessage(message) {
         //  Server message present within 'data' object (Web Specification)
         return JSON.parse(message.data);

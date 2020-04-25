@@ -1,10 +1,34 @@
+/*
+ * 
+ * Background script to act as a bridge between various manager classes.
+ *
+ * 
+ *  Why release instances?
+ *      The background script lives throughout the browser's lifetime. But if the user closes a tab/window 
+ *      or changes the url, the sync no longer can occur. Hence a manual disconnection (And resource freeing) 
+ *      is required.    
+ *      Else the socket would remain connected for no use.
+ * 
+ *  syncAllJoin vs syncAll
+ *      SyncAllJoin is initiated when a new user joins. This forces all video tags to enter the pause state,
+ *      so that all participants, especially the new participant, can be in the same state to begin with. Else
+ *      the new participant would be in a different state compared to the others.
+ *      SyncAll is called periodically to ensure all participants are within a specified time range as the leader.
+ *      Refer the contentScript for exact time range.
+ *   
+*/
+
+//
 //  Initializations
+//
 let videoTagManagerInstance;
 let webSocketManagerInstance;
 let tabMonitorInstance;
 const stateManagerInstance = new StateManager();
 
-//  Listen for messages
+//
+//  Listen for messages from background and content scripts
+//
 browser.runtime.onMessage.addListener((data) => {
 
     switch (data["tag"]) {
@@ -48,7 +72,9 @@ browser.runtime.onMessage.addListener((data) => {
 
 });
 
-//  From socketManager and tabMonitor
+//
+//  Listen to messages from socketManager and tabMonitor
+//
 function messageListener(tag, extraData = "") {
 
     switch (tag) {
@@ -94,6 +120,9 @@ function messageListener(tag, extraData = "") {
     }
 }
 
+//
+//  Utility functions
+//
 async function emitMessageToPopupScript(tag, extraData = "") {
     //  Update pop up script [If it exists]
     try {

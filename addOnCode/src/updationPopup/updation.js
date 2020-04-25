@@ -1,3 +1,16 @@
+/*
+ * 
+ *  Browser action script to show pop up to start syncing process.
+ *  
+ *          Script Behaviour
+ *  Fetch State -> If state was in error, it shows error message. Else if successfully syncing it shows message. 
+ *  Else if in start state -> Get video tag url. This calls the content script and checks if video tag present
+ *                              ,autoPlay enabled and if video has gotten meta data. If any of these is has not
+ *                              happened, error displayed.
+ *  Else, script gets videoUrl -> Emit to bakcground script to update server.                            
+ *
+*/
+
 let videoUrl;
 
 window.addEventListener('DOMContentLoaded', () => {

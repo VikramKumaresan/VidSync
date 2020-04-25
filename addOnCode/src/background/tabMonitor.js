@@ -1,3 +1,15 @@
+/*
+ * 
+ *  Class to monitor whether a tab's url is changed or is closed. In both cases the sync is no longer possible.
+ * 
+ *  New tabMonitor object is required for every sync, as the object only monitors the currentTabId.
+ * 
+ *  Why remove listeners?
+ *      Even if the old object is released, the listeners are still bound to that object (Till GC cleans it)
+ *      and it triggers false events.
+ * 
+*/
+
 class TabMonitor {
     //      Instance Attributes
     //  currentTabId;
