@@ -1,4 +1,4 @@
-tags = {
+export default {
     //  PopUp <--> Background Script
     "popUpBackground": {
         "update": 0,

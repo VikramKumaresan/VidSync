@@ -18,6 +18,12 @@
  *   
 */
 
+import tags from '../tags';
+import VideoTagManager from './videoTagManager';
+import WebSocketManager from './webSocketManager';
+import TabMonitor from './tabMonitor';
+import StateManager from './stateManager';
+
 //
 //  Initializations
 //

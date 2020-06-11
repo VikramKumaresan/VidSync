@@ -4,6 +4,8 @@
  *
 */
 
+import tags from '../tags';
+
 const videoTag = document.getElementsByTagName("video")[0];
 
 let isAutoPlayAllowed = false;

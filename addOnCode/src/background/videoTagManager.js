@@ -7,7 +7,9 @@
  * 
 */
 
-class VideoTagManager {
+import tags from '../tags';
+
+export default class VideoTagManager {
     //  Instance Attributes
     //currentTabId;
 

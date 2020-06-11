@@ -10,7 +10,9 @@
  * 
 */
 
-class TabMonitor {
+import tags from '../tags';
+
+export default class TabMonitor {
     //      Instance Attributes
     //  currentTabId;
     //  currentTabUrl;

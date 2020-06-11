@@ -11,6 +11,8 @@
  *
 */
 
+import tags from '../tags';
+
 let videoUrl;
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -107,14 +109,9 @@ async function checkVideoTagStatus() {
     } catch (e) {
         console.log(e);
 
-        //  Inject tags.js
-        await browser.tabs.executeScript({
-            file: "../tags.js"
-        });
-
         //  Inject content script
         await browser.tabs.executeScript({
-            file: "../contentScript/contentScript.js"
+            file: "../../builds/contentScript.js"
         });
 
         //  Check if videoTag ready

@@ -7,7 +7,10 @@
  * 
 */
 
-class WebSocketManager {
+import config from '../../config';
+import tags from '../tags';
+
+export default class WebSocketManager {
     //      Instance Attributes
     //  name;
     //  videoSrc;
