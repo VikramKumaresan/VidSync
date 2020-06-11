@@ -111,7 +111,7 @@ async function checkVideoTagStatus() {
 
         //  Inject content script
         await browser.tabs.executeScript({
-            file: "../../builds/contentScript.js"
+            file: "../../builds/contentScript.min.js"
         });
 
         //  Check if videoTag ready

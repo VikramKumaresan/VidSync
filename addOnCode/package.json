@@ -4,11 +4,14 @@
   "description": "",
   "main": "config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "removeBuilds": "rm -rf debugBuilds/ builds/",
+    "build": "npm run removeBuilds && npx rollup -c"
   },
   "author": "Vikram",
   "license": "ISC",
   "devDependencies": {
-    "rollup": "^2.15.0"
+    "rollup": "^2.15.0",
+    "rollup-plugin-terser": "^6.1.0"
   }
 }
