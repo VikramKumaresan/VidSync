@@ -10,28 +10,27 @@
  * 
 */
 
-import tags from '../tags';
-
 export default class TabMonitor {
     //      Instance Attributes
     //  currentTabId;
     //  currentTabUrl;
     //  onMessageBackgroundListener;
+    //  mainManagerInstance
 
     //  onTabUrlChangedListener
     //  onTabRemovedListener
 
-    constructor(onMessageBackgroundListener) {
-        this.onMessageBackgroundListener = onMessageBackgroundListener;
+    constructor(mainManagerInstance) {
+        this.mainManagerInstance = mainManagerInstance;
 
         this.onTabUrlChangedListener = (changedTabId, changeInfo, tab) => {
             if (this.currentTabUrl != tab.url) {
-                this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabUrlChange"]);
+                mainManagerInstance.releaseInstances();
             }
         };
         this.onTabRemovedListener = (changedTabId) => {
             if (changedTabId == this.currentTabId) {
-                this.onMessageBackgroundListener(tags["tabMonitorTags"]["tabClosed"]);
+                mainManagerInstance.releaseInstances();
             }
         };
 

@@ -1,6 +1,6 @@
 /*
  * 
- * Background script to act as a bridge between various manager classes.
+ * Background script to act to set up main listener and manager.
  *
  * 
  *  Why release instances?
@@ -19,18 +19,14 @@
 */
 
 import tags from '../tags';
-import VideoTagManager from './videoTagManager';
-import WebSocketManager from './webSocketManager';
-import TabMonitor from './tabMonitor';
+import MainManager from './mainManager';
 import StateManager from './stateManager';
 
 //
 //  Initializations
 //
-let videoTagManagerInstance;
-let webSocketManagerInstance;
-let tabMonitorInstance;
 const stateManagerInstance = new StateManager();
+let mainManagerInstance;
 
 //
 //  Listen for messages from background and content scripts
@@ -46,15 +42,11 @@ browser.runtime.onMessage.addListener((data) => {
         //  Name from browser action script
         case tags["popUpBackground"]["update"]:
             //  Disconnect and release old instances
-            if (webSocketManagerInstance) {
+            if (mainManagerInstance) {
                 releaseOldInstances();
             }
 
-            videoTagManagerInstance = new VideoTagManager();
-            tabMonitorInstance = new TabMonitor(messageListener);
-            webSocketManagerInstance = new WebSocketManager(data["name"], data["url"], messageListener);
-            webSocketManagerInstance.connectToSocketServer();
-
+            mainManagerInstance = new MainManager(stateManagerInstance, data["name"], data["url"],);
             stateManagerInstance.setState(tags["messages"]["connectingServer"]);
 
             return Promise.resolve({ "result": true });
@@ -62,95 +54,23 @@ browser.runtime.onMessage.addListener((data) => {
         //  Synchronize calls from content script
         case tags["socketServerTags"]["pause"]:
         case tags["socketServerTags"]["play"]:
-            webSocketManagerInstance.sendMessageToServer(data);
+            mainManagerInstance.webSocketManagerInstance.sendMessageToServer(data);
             break;
 
         case tags["socketServerTags"]["seek"]:
-            webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "seekTo": data["extraData"] });
+            mainManagerInstance.webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "seekTo": data["extraData"] });
             break;
 
         case tags["socketServerTags"]["getTime"]:
         case tags["socketServerTags"]["getTimeAutoSync"]:
         case tags["socketServerTags"]["updateTime"]:
-            webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "currentTime": data["extraData"] });
+            mainManagerInstance.webSocketManagerInstance.sendMessageToServer({ "tag": data["tag"], "currentTime": data["extraData"] });
             break;
     }
 
 });
 
-//
-//  Listen to messages from socketManager and tabMonitor
-//
-function messageListener(tag, extraData = "") {
-
-    switch (tag) {
-        //  Tab monitor messages
-        case tags["tabMonitorTags"]["tabClosed"]:
-        case tags["tabMonitorTags"]["tabUrlChange"]:
-            if (webSocketManagerInstance) {
-                releaseOldInstances();
-            }
-            break;
-
-        //  Synchronize messages from socket
-        case tags["socketServerTags"]["pause"]:
-            videoTagManagerInstance.pauseVideo(extraData);
-            break;
-
-        case tags["socketServerTags"]["play"]:
-            videoTagManagerInstance.playVideo(extraData);
-            break;
-
-        case tags["socketServerTags"]["seek"]:
-            videoTagManagerInstance.seekVideo(extraData["seekTo"], extraData["name"]);
-            break;
-
-        case tags["socketServerTags"]["getTime"]:
-        case tags["socketServerTags"]["getTimeAutoSync"]:
-        case tags["socketServerTags"]["updateTime"]:
-            videoTagManagerInstance.getTime(tag);
-            break;
-
-        case tags["socketServerTags"]["syncAll"]:
-            videoTagManagerInstance.sync(extraData);
-            break;
-
-        case tags["socketServerTags"]["syncAllNewJoin"]:
-            videoTagManagerInstance.syncNewJoin(extraData);
-            break;
-
-        //  Other messages from socket
-        default:
-            emitMessageToPopupScript(tag, extraData)
-            videoTagManagerInstance.displayMessage(tag, extraData);
-    }
-}
-
-//
-//  Utility functions
-//
-async function emitMessageToPopupScript(tag, extraData = "") {
-    //  Update pop up script [If it exists]
-    try {
-        browser.runtime.sendMessage({
-            "tag": tag,
-            "extra": extraData
-        });
-    }
-    catch (e) { }
-    finally {
-        stateManagerInstance.setState(tag, extraData);
-    }
-}
-
 function releaseOldInstances() {
-    webSocketManagerInstance.disconnectFromSocketServer();
-    webSocketManagerInstance = null;
-
-    videoTagManagerInstance = null;
-
-    tabMonitorInstance.removeListeners();
-    tabMonitorInstance = null;
-
+    mainManagerInstance.releaseInstances();
     stateManagerInstance.refreshState();
 }

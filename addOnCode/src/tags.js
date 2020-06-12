@@ -31,10 +31,10 @@ export default {
         "seek": "seek",
         "pause": "pause",
         "play": "play",
-        "syncAll": "syncAll",
-        "syncAllNewJoin": "syncAllNewJoin",
-        "getTime": "getTime",
-        "getTimeAutoSync": "getTimeAutoSync",
+        "syncAll": "syncAll",   //  Triggered by auto sync
+        "syncAllNewJoin": "syncAllNewJoin", //  Triggered when new join. Forces all to pause
+        "getTime": "getTime",   //  For syncAllNewJoin
+        "getTimeAutoSync": "getTimeAutoSync",  //   For AutoSync
         "updateTime": "updateTime"
     },
     "messages": {

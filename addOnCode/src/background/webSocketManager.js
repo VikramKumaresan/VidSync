@@ -16,13 +16,14 @@ export default class WebSocketManager {
     //  videoSrc;
     //  socket;
     //  onMessageBackgroundListener;
+    //  mainManagerInstance
 
     //  isCannotConnect
 
-    constructor(name, src, listener) {
+    constructor(name, src, mainManagerInstance) {
         this.name = name;
         this.videoSrc = src;
-        this.onMessageBackgroundListener = listener;
+        this.mainManagerInstance = mainManagerInstance;
         this.socket = null;
 
         //  onClose fired immediately after onError. Helps check and give meaningful error
@@ -34,10 +35,10 @@ export default class WebSocketManager {
         this.socket = new WebSocket(config["socketServerUrl"]);
 
         //  Attach listeners
-        this.socket.onerror = () => { this.onErrorListener(this); }
-        this.socket.onclose = () => { this.onCloseListener(this); }
-        this.socket.onopen = () => { this.onOpenListener(this); }
-        this.socket.onmessage = (message) => { this.onMessageListener(this, this.parseServerMessage(message)) };
+        this.socket.onerror = () => { this.onErrorListener(); }
+        this.socket.onclose = () => { this.onCloseListener(); }
+        this.socket.onopen = () => { this.onOpenListener(); }
+        this.socket.onmessage = (message) => { this.onMessageListener(this.parseServerMessage(message)) };
 
     }
 
@@ -52,21 +53,22 @@ export default class WebSocketManager {
     //
     //  Listeners
     //
-    onErrorListener(context) {
-        //  Can't connect to server
-        context.onMessageBackgroundListener(tags["error"]["connectionError"]);
+    onErrorListener() {
+        this.mainManagerInstance.stateManagerInstance.setState(tags["error"]["connectionError"]);
+        this.mainManagerInstance.displayMessage(tags["error"]["connectionError"]);
         this.isCannotConnect = true;
     }
-    onCloseListener(context) {
+    onCloseListener() {
         if (this.isCannotConnect) {
             this.isCannotConnect = false;
             return;
         }
 
         //  Connection to server closed
-        context.onMessageBackgroundListener(tags["error"]["connectionClose"]);
+        this.mainManagerInstance.stateManagerInstance.setState(tags["error"]["connectionClose"]);
+        this.mainManagerInstance.displayMessage(tags["error"]["connectionClose"]);
     }
-    onOpenListener(context) {
+    onOpenListener() {
         //  Send participant details
         const message = {
             "tag": tags["socketServerTags"]["update"],
@@ -75,50 +77,47 @@ export default class WebSocketManager {
         }
         this.sendMessageToServer(message);
 
-        context.onMessageBackgroundListener(tags["webSocketMessages"]["connectionOpen"]);
+        this.mainManagerInstance.stateManagerInstance.setState(tags["webSocketMessages"]["connectionOpen"]);
+        this.mainManagerInstance.displayMessage(tags["webSocketMessages"]["connectionOpen"]);
     }
-    onMessageListener(context, data) {
+    onMessageListener(data) {
         switch (data["tag"]) {
 
             //  Check if server updation failed
             case tags["socketServerTags"]["update"]:
                 if (!data["message"]["isUpdate"]) {
-                    context.onMessageBackgroundListener(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
+                    this.mainManagerInstance.stateManagerInstance.setState(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
+                    this.mainManagerInstance.displayMessage(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
                 }
                 break;
 
             case tags["socketServerTags"]["pause"]:
+                this.mainManagerInstance.videoTagManagerInstance.pauseVideo(data["name"]);
+                break;
+
             case tags["socketServerTags"]["play"]:
-                context.onMessageBackgroundListener(data["tag"], data["name"]);
+                this.mainManagerInstance.videoTagManagerInstance.playVideo(data["name"]);
                 break;
 
             case tags["socketServerTags"]["seek"]:
-                context.onMessageBackgroundListener(tags["socketServerTags"]["seek"],
-                    {
-                        "name": data["name"],
-                        "seekTo": data["message"]
-                    }
-                );
+                this.mainManagerInstance.videoTagManagerInstance.seekVideo(data["message"], data["name"]);
                 break;
 
             case tags["socketServerTags"]["getTime"]:
             case tags["socketServerTags"]["getTimeAutoSync"]:
             case tags["socketServerTags"]["updateTime"]:
-                context.onMessageBackgroundListener(data["tag"]);
+                this.mainManagerInstance.videoTagManagerInstance.getTime(data["tag"]);
                 break;
 
 
             case tags["socketServerTags"]["syncAll"]:
             case tags["socketServerTags"]["syncAllNewJoin"]:
-                context.onMessageBackgroundListener(data["tag"], data["message"]);
+                this.mainManagerInstance.videoTagManagerInstance.sync(data["tag"], data["message"]);
                 break;
 
         }
     }
 
-    //
-    //  Utility functions
-    //
     parseServerMessage(message) {
         //  Server message present within 'data' object (Web Specification)
         return JSON.parse(message.data);
