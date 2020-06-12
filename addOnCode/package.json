@@ -11,6 +11,7 @@
   "author": "Vikram",
   "license": "ISC",
   "devDependencies": {
+    "addons-linter": "^1.25.0",
     "rollup": "^2.15.0",
     "rollup-plugin-terser": "^6.1.0"
   }
