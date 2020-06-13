@@ -10,6 +10,8 @@
  * 
 */
 
+import getCurrentTab from '../utils/getCurrentTab';
+
 export default class TabMonitor {
     //      Instance Attributes
     //  currentTabId;
@@ -38,20 +40,12 @@ export default class TabMonitor {
     }
 
     async initialize() {
-        await this.getCurrentTabId();
+        const currentTab = await getCurrentTab();
+        this.currentTabId = currentTab.id;
+        this.currentTabUrl = currentTab.url;
+
         browser.tabs.onUpdated.addListener(this.onTabUrlChangedListener, { "properties": ["title"], "tabId": this.currentTabId });
         browser.tabs.onRemoved.addListener(this.onTabRemovedListener)
-    }
-
-    async getCurrentTabId() {
-        //  Get active tab
-        let tabArray = await browser.tabs.query({
-            active: true,
-            currentWindow: true
-        });
-
-        this.currentTabId = tabArray[0].id;
-        this.currentTabUrl = tabArray[0].url;
     }
 
     removeListeners() {

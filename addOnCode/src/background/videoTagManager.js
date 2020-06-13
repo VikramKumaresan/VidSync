@@ -8,13 +8,19 @@
 */
 
 import tags from '../tags';
+import getCurrentTab from '../utils/getCurrentTab';
 
 export default class VideoTagManager {
     //  Instance Attributes
     //currentTabId;
 
     constructor() {
-        this.getCurrentTabId();
+        this.initialize();
+    }
+
+    async initialize() {
+        const currentTab = await getCurrentTab();
+        this.currentTabId = currentTab.id;
     }
 
     //  Video operation calls
@@ -51,15 +57,5 @@ export default class VideoTagManager {
             "data": data,
             "name": name
         });
-    }
-
-    async getCurrentTabId() {
-        //  Get active tab
-        let tabArray = await browser.tabs.query({
-            active: true,
-            currentWindow: true
-        });
-
-        this.currentTabId = tabArray[0].id;
     }
 }
