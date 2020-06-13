@@ -39,7 +39,6 @@ export default class WebSocketManager {
         this.socket.onclose = () => { this.onCloseListener(); }
         this.socket.onopen = () => { this.onOpenListener(); }
         this.socket.onmessage = (message) => { this.onMessageListener(this.parseServerMessage(message)) };
-
     }
 
     sendMessageToServer(message) {
@@ -54,8 +53,7 @@ export default class WebSocketManager {
     //  Listeners
     //
     onErrorListener() {
-        this.mainManagerInstance.stateManagerInstance.setState(tags["error"]["connectionError"]);
-        this.mainManagerInstance.displayMessage(tags["error"]["connectionError"]);
+        this.setStateAndDisplayMessage(tags["error"]["connectionError"]);
         this.isCannotConnect = true;
     }
     onCloseListener() {
@@ -65,8 +63,7 @@ export default class WebSocketManager {
         }
 
         //  Connection to server closed
-        this.mainManagerInstance.stateManagerInstance.setState(tags["error"]["connectionClose"]);
-        this.mainManagerInstance.displayMessage(tags["error"]["connectionClose"]);
+        this.setStateAndDisplayMessage(tags["error"]["connectionClose"]);
     }
     onOpenListener() {
         //  Send participant details
@@ -77,8 +74,7 @@ export default class WebSocketManager {
         }
         this.sendMessageToServer(message);
 
-        this.mainManagerInstance.stateManagerInstance.setState(tags["webSocketMessages"]["connectionOpen"]);
-        this.mainManagerInstance.displayMessage(tags["webSocketMessages"]["connectionOpen"]);
+        this.setStateAndDisplayMessage(tags["webSocketMessages"]["connectionOpen"]);
     }
     onMessageListener(data) {
         switch (data["tag"]) {
@@ -86,8 +82,7 @@ export default class WebSocketManager {
             //  Check if server updation failed
             case tags["socketServerTags"]["update"]:
                 if (!data["message"]["isUpdate"]) {
-                    this.mainManagerInstance.stateManagerInstance.setState(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
-                    this.mainManagerInstance.displayMessage(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
+                    this.setStateAndDisplayMessage(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
                 }
                 break;
 
@@ -121,5 +116,10 @@ export default class WebSocketManager {
     parseServerMessage(message) {
         //  Server message present within 'data' object (Web Specification)
         return JSON.parse(message.data);
+    }
+
+    setStateAndDisplayMessage(tag, data = "") {
+        this.mainManagerInstance.stateManagerInstance.setState(tag, data);
+        this.mainManagerInstance.displayMessage(tag, data);
     }
 }

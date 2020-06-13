@@ -29,7 +29,7 @@ const stateManagerInstance = new StateManager();
 let mainManagerInstance;
 
 //
-//  Listen for messages from background and content scripts
+//  Listen for messages from content script and pop up script
 //
 browser.runtime.onMessage.addListener((data) => {
 

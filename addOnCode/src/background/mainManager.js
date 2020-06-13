@@ -7,6 +7,7 @@
 import VideoTagManager from './videoTagManager';
 import WebSocketManager from './webSocketManager';
 import TabMonitor from './tabMonitor';
+import { emitMessageToBackgroundScript, emitToContentScriptInTab } from "../utils/emitMessageMethods";
 
 export default class MainManager {
 
@@ -31,19 +32,8 @@ export default class MainManager {
         this.stateManagerInstance.refreshState();
     }
 
-    async emitMessageToPopupScript(tag, extraData = "") {
-        //  Update pop up script [If it exists]
-        try {
-            browser.runtime.sendMessage({
-                "tag": tag,
-                "extra": extraData
-            });
-        }
-        catch (e) { }
-    }
-
     displayMessage(tag, message) {
-        this.emitMessageToPopupScript(tag, message);
-        this.videoTagManagerInstance.displayMessage(tag, message);
+        emitMessageToBackgroundScript(tag, message);
+        emitToContentScriptInTab(this.tabMonitorInstance.getTabId(), tag, message);
     }
 }

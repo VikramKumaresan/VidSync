@@ -9,6 +9,8 @@
 
 import tags from '../tags';
 import getCurrentTab from '../utils/getCurrentTab';
+import { emitToContentScriptInTab } from "../utils/emitMessageMethods";
+
 
 export default class VideoTagManager {
     //  Instance Attributes
@@ -25,37 +27,22 @@ export default class VideoTagManager {
 
     //  Video operation calls
     pauseVideo(name) {
-        this.emitToContentScript(tags["socketServerTags"]["pause"], "", name);
+        emitToContentScriptInTab(this.currentTabId, tags["socketServerTags"]["pause"], "", name);
     }
 
     playVideo(name) {
-        this.emitToContentScript(tags["socketServerTags"]["play"], "", name);
+        emitToContentScriptInTab(this.currentTabId, tags["socketServerTags"]["play"], "", name);
     }
 
     seekVideo(seekTo, name) {
-        this.emitToContentScript(tags["socketServerTags"]["seek"], seekTo, name);
+        emitToContentScriptInTab(this.currentTabId, tags["socketServerTags"]["seek"], seekTo, name);
     }
 
     getTime(tag) {
-        this.emitToContentScript(tag);
+        emitToContentScriptInTab(this.currentTabId, tag);
     }
 
     sync(tag, time) {
-        this.emitToContentScript(tag, time);
-    }
-
-    //
-    //  Utility functions
-    //
-    displayMessage(tag, extraData) {
-        this.emitToContentScript(tag, extraData)
-    }
-
-    emitToContentScript(tag, data = "", name = "") {
-        browser.tabs.sendMessage(this.currentTabId, {
-            "tag": tag,
-            "data": data,
-            "name": name
-        });
+        emitToContentScriptInTab(this.currentTabId, tag, time);
     }
 }

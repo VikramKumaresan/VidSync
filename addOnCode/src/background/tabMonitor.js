@@ -16,7 +16,6 @@ export default class TabMonitor {
     //      Instance Attributes
     //  currentTabId;
     //  currentTabUrl;
-    //  onMessageBackgroundListener;
     //  mainManagerInstance
 
     //  onTabUrlChangedListener
@@ -52,4 +51,6 @@ export default class TabMonitor {
         browser.tabs.onUpdated.removeListener(this.onTabUrlChangedListener);
         browser.tabs.onRemoved.removeListener(this.onTabRemovedListener);
     }
+
+    getTabId() { return this.currentTabId; }
 }
