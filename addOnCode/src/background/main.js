@@ -43,7 +43,7 @@ browser.runtime.onMessage.addListener((data) => {
         case tags["popUpBackground"]["update"]:
             //  Disconnect and release old instances
             if (mainManagerInstance) {
-                releaseOldInstances();
+                mainManagerInstance.releaseInstances();
             }
 
             mainManagerInstance = new MainManager(stateManagerInstance, data["name"], data["url"],);
@@ -69,8 +69,3 @@ browser.runtime.onMessage.addListener((data) => {
     }
 
 });
-
-function releaseOldInstances() {
-    mainManagerInstance.releaseInstances();
-    stateManagerInstance.refreshState();
-}
