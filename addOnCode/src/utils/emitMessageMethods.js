@@ -1,19 +1,10 @@
-async function emitToContentScriptInTab(tabId, tag, data = "", name = "") {
-    browser.tabs.sendMessage(tabId, {
-        "tag": tag,
-        "data": data,
-        "name": name
-    });
+async function emitToContentScriptInTab(tabId, messageObject) {
+    browser.tabs.sendMessage(tabId, messageObject);
 }
 
-async function emitMessageToBackgroundScript(tag, extraData = "") {
+async function emitMessageToBackgroundScript(messageObject) {
     //  Update background script [If it exists, ex. pop up script]
-    try {
-        browser.runtime.sendMessage({
-            "tag": tag,
-            "extra": extraData
-        });
-    }
+    try { browser.runtime.sendMessage(messageObject); }
     catch (e) { }
 }
 

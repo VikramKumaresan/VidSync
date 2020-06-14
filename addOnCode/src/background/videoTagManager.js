@@ -27,22 +27,30 @@ export default class VideoTagManager {
 
     //  Video operation calls
     pauseVideo(name) {
-        emitToContentScriptInTab(this.currentTabId, tags["socketServerTags"]["pause"], "", name);
+        emitToContentScriptInTab(this.currentTabId, createMessageObject(tags["socketServerTags"]["pause"], "", name));
     }
 
     playVideo(name) {
-        emitToContentScriptInTab(this.currentTabId, tags["socketServerTags"]["play"], "", name);
+        emitToContentScriptInTab(this.currentTabId, createMessageObject(tags["socketServerTags"]["play"], "", name));
     }
 
     seekVideo(seekTo, name) {
-        emitToContentScriptInTab(this.currentTabId, tags["socketServerTags"]["seek"], seekTo, name);
+        emitToContentScriptInTab(this.currentTabId, createMessageObject(tags["socketServerTags"]["seek"], seekTo, name));
     }
 
     getTime(tag) {
-        emitToContentScriptInTab(this.currentTabId, tag);
+        emitToContentScriptInTab(this.currentTabId, createMessageObject(tag));
     }
 
     sync(tag, time) {
-        emitToContentScriptInTab(this.currentTabId, tag, time);
+        emitToContentScriptInTab(this.currentTabId, createMessageObject(tag, time));
+    }
+
+    createMessageObject(tag, data = "", name = "") {
+        return {
+            "tag": tag,
+            "data": data,
+            "name": name
+        };
     }
 }

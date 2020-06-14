@@ -7,7 +7,6 @@
 import VideoTagManager from './videoTagManager';
 import WebSocketManager from './webSocketManager';
 import TabMonitor from './tabMonitor';
-import { emitMessageToBackgroundScript, emitToContentScriptInTab } from "../utils/emitMessageMethods";
 
 export default class MainManager {
 
@@ -30,10 +29,5 @@ export default class MainManager {
         this.webSocketManagerInstance.disconnectFromSocketServer();
         this.tabMonitorInstance.removeListeners();
         this.stateManagerInstance.refreshState();
-    }
-
-    displayMessage(tag, message) {
-        emitMessageToBackgroundScript(tag, message);
-        emitToContentScriptInTab(this.tabMonitorInstance.getTabId(), tag, message);
     }
 }

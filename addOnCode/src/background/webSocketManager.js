@@ -9,6 +9,7 @@
 
 import config from '../../config';
 import tags from '../tags';
+import { emitMessageToBackgroundScript, emitToContentScriptInTab } from "../utils/emitMessageMethods";
 
 export default class WebSocketManager {
     //      Instance Attributes
@@ -120,6 +121,8 @@ export default class WebSocketManager {
 
     setStateAndDisplayMessage(tag, data = "") {
         this.mainManagerInstance.stateManagerInstance.setState(tag, data);
-        this.mainManagerInstance.displayMessage(tag, data);
+
+        emitMessageToBackgroundScript({ "tag": tag, "extra": data });
+        emitToContentScriptInTab(this.mainManagerInstance.tabMonitorInstance.getTabId(), { "tag": tag, "data": message });
     }
 }
