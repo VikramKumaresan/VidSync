@@ -2,30 +2,17 @@ export default {
     //  PopUp <--> Background Script
     "popUpBackground": {
         "update": 0,
-        "getState": 5
+        "getState": 1
     },
     //  PopUp <--> Content Script
     "popUpContent": {
-        "videoTag": 1,
-        "reloadPopUp": 4
+        "videoTag": 2,
+        "reloadPopUp": 3
     },
     //  Content <--> Background
     "contentBackground": {
-        "windowClose": 2
+        "windowClose": 4
     },
-    "error": {
-        "connectionError": -1,
-        "connectionClose": -2
-    },
-    "webSocketMessages": {
-        "connectionOpen": 3
-    },
-    //  When changes to tab occur
-    "tabMonitorTags": {
-        "tabClosed": "tabClosed",
-        "tabUrlChange": "tabUrlChange"
-    },
-    //  When sending to server
     "socketServerTags": {
         "update": "update",
         "seek": "seek",
@@ -41,14 +28,32 @@ export default {
         "noCapturableTags": "No capturable video sources available!",
         "notReadyState": "Video is still loading. Try again after a bit!",
         "noAutoPlay": "Auto play disabled. Pls allow auto play!",
-        "connectingServer": "Connecting to server...",
-        "cannotConnectServer": "Cannot connect to server!",
-        "connectionClosedServer": "Connection closed from server!",
-        "updationServerFailed": "Sync failed! Others are watching ",
-        "connectedServer": "Connected and syncing!",
         "syncAll": "Server sync",
         "pause": "Pause - ",
         "play": "Play - ",
         "seek": "Seek - "
+    },
+    "states": {
+        "stateTag": "stateTag",
+        "connectingServer": {
+            "message": "Connecting to server...",
+            "isError": false
+        },
+        "connectionOpen": {
+            "message": "Connected and syncing!",
+            "isError": false
+        },
+        "connectionClose": {
+            "message": "Connection closed from server!",
+            "isError": true
+        },
+        "connectionError": {
+            "message": "Cannot connect to server!",
+            "isError": true
+        },
+        "updationServerFailed": {
+            "message": "Sync failed! Others are watching ",
+            "isError": true
+        }
     }
 }

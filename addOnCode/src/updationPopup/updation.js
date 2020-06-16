@@ -17,8 +17,6 @@ let videoUrl;
 
 window.addEventListener('DOMContentLoaded', () => {
     initialize();
-
-    document.getElementById("updateButton").addEventListener("click", sendDataToBackground);
 });
 
 async function initialize() {
@@ -39,44 +37,23 @@ async function getState() {
     return Promise.resolve(state);
 }
 
-//  Listen to messages
+//  Listen to messages from background script
 browser.runtime.onMessage.addListener((data) => {
 
     switch (data["tag"]) {
-
-        //  Error from background script
-        case tags["error"]["connectionError"]:
-            showMessageInPopUp(tags["messages"]["cannotConnectServer"]);
-            break;
-
-        //  Close from background script
-        case tags["error"]["connectionClose"]:
-            showMessageInPopUp(tags["messages"]["connectionClosedServer"]);
-            break;
-
-        //  Connected to server from background script
-        case tags["webSocketMessages"]["connectionOpen"]:
-            showMessageInPopUp(tags["messages"]["connectedServer"]);
-            break;
-
-        //  Updation failed from background script
-        case tags["messages"]["updationServerFailed"]:
-            showMessageInPopUp(tags["messages"]["updationServerFailed"] + data["extra"]);
+        case tags["states"]["stateTag"]:
+            showMessageInPopUp(data["stateObj"]["message"]);
             break;
     }
 
 });
 
-async function sendDataToBackground() {
-    let result = await browser.runtime.sendMessage({
+function sendDataToBackground() {
+    browser.runtime.sendMessage({
         "tag": tags["popUpBackground"]["update"],
         "name": document.getElementById("name").value,
         "url": videoUrl
     });
-
-    if (result["result"]) {
-        showMessageInPopUp(tags["messages"]["connectingServer"]);
-    }
 }
 
 //  Hides form and displays message
@@ -131,5 +108,6 @@ async function checkVideoTagStatus() {
         }
 
         videoUrl = result["url"];
+        document.getElementById("updateButton").addEventListener("click", sendDataToBackground);
     }
 }

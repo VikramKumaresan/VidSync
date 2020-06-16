@@ -86,20 +86,13 @@ browser.runtime.onMessage.addListener((data) => {
             return Promise.resolve({ "result": true, "url": document.URL });
 
         //  Message Display calls
-        case tags["error"]["connectionError"]:
-            displayMessage(tags["messages"]["cannotConnectServer"], failureColor);
-            break;
+        case tags["states"]["stateTag"]:
 
-        case tags["error"]["connectionClose"]:
-            displayMessage(tags["messages"]["connectionClosedServer"], failureColor);
-            break;
-
-        case tags["webSocketMessages"]["connectionOpen"]:
-            displayMessage(tags["messages"]["connectedServer"], successColor);
-            break;
-
-        case tags["messages"]["updationServerFailed"]:
-            displayMessage(tags["messages"]["updationServerFailed"] + data["data"], failureColor);
+            if (data["stateObj"]["isError"]) {
+                displayMessage(data["stateObj"]["message"], failureColor);
+                return;
+            }
+            displayMessage(data["stateObj"]["message"], successColor);
             break;
 
         //  Video tag operation calls

@@ -9,7 +9,8 @@
 
 import config from '../../config';
 import tags from '../tags';
-import { emitMessageToBackgroundScript, emitToContentScriptInTab } from "../utils/emitMessageMethods";
+import { emitMessageToBackgroundScript as emitMessageToPopUpScript, emitToContentScriptInTab } from "../utils/emitMessageMethods";
+import appendToStateObject from "../utils/appendToStateObject";
 
 export default class WebSocketManager {
     //      Instance Attributes
@@ -54,7 +55,7 @@ export default class WebSocketManager {
     //  Listeners
     //
     onErrorListener() {
-        this.setStateAndDisplayMessage(tags["error"]["connectionError"]);
+        this.setStateAndDisplayMessage(tags["states"]["connectionError"]);
         this.isCannotConnect = true;
     }
     onCloseListener() {
@@ -64,7 +65,7 @@ export default class WebSocketManager {
         }
 
         //  Connection to server closed
-        this.setStateAndDisplayMessage(tags["error"]["connectionClose"]);
+        this.setStateAndDisplayMessage(tags["states"]["connectionClose"]);
     }
     onOpenListener() {
         //  Send participant details
@@ -75,7 +76,7 @@ export default class WebSocketManager {
         }
         this.sendMessageToServer(message);
 
-        this.setStateAndDisplayMessage(tags["webSocketMessages"]["connectionOpen"]);
+        this.setStateAndDisplayMessage(tags["states"]["connectionOpen"]);
     }
     onMessageListener(data) {
         switch (data["tag"]) {
@@ -83,7 +84,9 @@ export default class WebSocketManager {
             //  Check if server updation failed
             case tags["socketServerTags"]["update"]:
                 if (!data["message"]["isUpdate"]) {
-                    this.setStateAndDisplayMessage(tags["messages"]["updationServerFailed"], data["message"]["videoSrc"]);
+                    this.setStateAndDisplayMessage(
+                        appendToStateObject(tags["states"]["updationServerFailed"], data["message"]["videoSrc"])
+                    );
                 }
                 break;
 
@@ -119,10 +122,13 @@ export default class WebSocketManager {
         return JSON.parse(message.data);
     }
 
-    setStateAndDisplayMessage(tag, data = "") {
-        this.mainManagerInstance.stateManagerInstance.setState(tag, data);
+    setStateAndDisplayMessage(stateObject) {
+        this.mainManagerInstance.stateManagerInstance.setState(stateObject);
 
-        emitMessageToBackgroundScript({ "tag": tag, "extra": data });
-        emitToContentScriptInTab(this.mainManagerInstance.tabMonitorInstance.getTabId(), { "tag": tag, "data": message });
+        emitMessageToPopUpScript({ "tag": tags["states"]["stateTag"], "stateObj": stateObject });
+        emitToContentScriptInTab(
+            this.mainManagerInstance.tabMonitorInstance.getTabId(),
+            { "tag": tags["states"]["stateTag"], "stateObj": stateObject }
+        );
     }
 }

@@ -27,23 +27,23 @@ export default class VideoTagManager {
 
     //  Video operation calls
     pauseVideo(name) {
-        emitToContentScriptInTab(this.currentTabId, createMessageObject(tags["socketServerTags"]["pause"], "", name));
+        emitToContentScriptInTab(this.currentTabId, this.createMessageObject(tags["socketServerTags"]["pause"], "", name));
     }
 
     playVideo(name) {
-        emitToContentScriptInTab(this.currentTabId, createMessageObject(tags["socketServerTags"]["play"], "", name));
+        emitToContentScriptInTab(this.currentTabId, this.createMessageObject(tags["socketServerTags"]["play"], "", name));
     }
 
     seekVideo(seekTo, name) {
-        emitToContentScriptInTab(this.currentTabId, createMessageObject(tags["socketServerTags"]["seek"], seekTo, name));
+        emitToContentScriptInTab(this.currentTabId, this.createMessageObject(tags["socketServerTags"]["seek"], seekTo, name));
     }
 
     getTime(tag) {
-        emitToContentScriptInTab(this.currentTabId, createMessageObject(tag));
+        emitToContentScriptInTab(this.currentTabId, this.createMessageObject(tag));
     }
 
     sync(tag, time) {
-        emitToContentScriptInTab(this.currentTabId, createMessageObject(tag, time));
+        emitToContentScriptInTab(this.currentTabId, this.createMessageObject(tag, time));
     }
 
     createMessageObject(tag, data = "", name = "") {

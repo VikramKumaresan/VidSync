@@ -36,36 +36,9 @@ export default class StateManager {
         });
     }
 
-    setState(tag, extraData = "") {
-
-        //  All possible states
-        switch (tag) {
-            case tags["messages"]["connectingServer"]:
-                this.isError = false;
-                this.message = tag;
-                break;
-
-            case tags["webSocketMessages"]["connectionOpen"]:
-                this.isError = false;
-                this.message = tags["messages"]["connectedServer"];
-                break;
-
-            case tags["error"]["connectionClose"]:
-                this.isError = true;
-                this.message = tags["messages"]["connectionClosedServer"];
-                break;
-
-            case tags["error"]["connectionError"]:
-                this.isError = true;
-                this.message = tags["messages"]["cannotConnectServer"];
-                break;
-
-            case tags["messages"]["updationServerFailed"]:
-                this.isError = true;
-                this.message = tags["messages"]["updationServerFailed"] + extraData;
-                break;
-        }
-
+    setState(stateObj) {
+        this.isError = stateObj.isError;
+        this.message = stateObj.message;
     }
 
     refreshState() {
