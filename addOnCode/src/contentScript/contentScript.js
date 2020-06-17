@@ -83,7 +83,7 @@ browser.runtime.onMessage.addListener((data) => {
                 return Promise.resolve({ "result": false, "tag": tags["messages"]["notReadyState"] });
             }
 
-            return Promise.resolve({ "result": true, "url": document.URL });
+            return Promise.resolve({ "result": true, "url": document.URL, tag: "" });
 
         //  Message Display calls
         case tags["states"]["stateTag"]:

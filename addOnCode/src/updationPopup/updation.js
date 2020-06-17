@@ -12,29 +12,30 @@
 */
 
 import tags from '../tags';
+import { emitMessageToBackgroundScript } from "../utils/emitMessageMethods";
+import getCurrentTabId from "../utils/getCurrentTab";
+import PopUpManager from "./popUpManager";
 
-let videoUrl;
+let videoUrl, popUpManagerInstance;
 
 window.addEventListener('DOMContentLoaded', () => {
     initialize();
 });
 
 async function initialize() {
-    let state = await getState();
+    popUpManagerInstance = new PopUpManager(sendUpdateDataToBackground);
 
-    if (state["isError"] || (state["stateMessage"].length != 0)) {
-        showMessageInPopUp(state["stateMessage"]);
+    const state = await getState();
+
+    if (state["stateMessage"].length != 0) {
+        popUpManagerInstance.showMessage(state["stateMessage"]);
         return;
     }
-
-    checkVideoTagStatus();
+    getVideoUrl();
 }
 
 async function getState() {
-    let state = await browser.runtime.sendMessage({
-        "tag": tags["popUpBackground"]["getState"]
-    });
-    return Promise.resolve(state);
+    return await browser.runtime.sendMessage({ "tag": tags["popUpBackground"]["getState"] });
 }
 
 //  Listen to messages from background script
@@ -42,72 +43,58 @@ browser.runtime.onMessage.addListener((data) => {
 
     switch (data["tag"]) {
         case tags["states"]["stateTag"]:
-            showMessageInPopUp(data["stateObj"]["message"]);
+            popUpManagerInstance.showMessage(data["stateObj"]["message"]);
             break;
     }
 
 });
 
-function sendDataToBackground() {
-    browser.runtime.sendMessage({
+function sendUpdateDataToBackground() {
+    emitMessageToBackgroundScript({
         "tag": tags["popUpBackground"]["update"],
-        "name": document.getElementById("name").value,
+        "name": popUpManagerInstance.getName(),
         "url": videoUrl
-    });
+    })
+    popUpManagerInstance.showMessage(tags["states"]["connectingServer"]["message"]);
 }
 
-//  Hides form and displays message
-function showMessageInPopUp(message) {
-    const messageTag = document.getElementById("errorMessage");
-    messageTag.textContent = message;
-    messageTag.style.display = "block";
+async function getVideoUrl() {
+    const currentTab = await getCurrentTabId();
 
-    document.getElementById("form").style.display = "none";
-}
+    await loadContentScriptIfNeeded(currentTab.id);
 
-async function checkVideoTagStatus() {
-
-    //  Get active tab
-    let tabArray = await browser.tabs.query({
-        active: true,
-        currentWindow: true
-    });
-
-    let result;
-
-    //  Check if content script already loaded
-    try {
-
-        //  Check if videoTag ready
-        result = await browser.tabs.sendMessage(tabArray[0].id, {
-            "tag": tags["popUpContent"]["videoTag"]
-        });
-
-    } catch (e) {
-        console.log(e);
-
-        //  Inject content script
-        await browser.tabs.executeScript({
-            file: "../../builds/contentScript.min.js"
-        });
-
-        //  Check if videoTag ready
-        result = await browser.tabs.sendMessage(tabArray[0].id, {
-            "tag": tags["popUpContent"]["videoTag"]
-        });
-    }
+    const result = await getVideoUrlFromContentScript(currentTab.id);
 
     if (!result["result"]) {
-        showMessageInPopUp(result["tag"]);
+        popUpManagerInstance.showMessage(result["tag"]);
+    }
+    else if (result["tag"] == tags["popUpContent"]["reloadPopUp"]) {
+        location.reload();
     }
     else {
-        //  Reload popUp
-        if (("tag" in result) && (result["tag"] == tags["popUpContent"]["reloadPopUp"])) {
-            location.reload();
-            return;
-        }
-
         videoUrl = result["url"];
-        document.getElementById("updateButton").addEventListener("click", sendDataToBackground);
+        popUpManagerInstance.attachUpdateButtonListener();
     }
+}
+
+async function loadContentScriptIfNeeded(tabId) {
+    const isLoaded = await isContentScriptLoaded(tabId);
+    if (!isLoaded) {
+        await injectContentScript();
+    }
+}
+
+async function isContentScriptLoaded(tabId) {
+    try {
+        await getVideoUrlFromContentScript(tabId);
+        return true;
+    } catch (e) { return false; }
+}
+
+async function getVideoUrlFromContentScript(tabId) {
+    return await browser.tabs.sendMessage(tabId, { "tag": tags["popUpContent"]["videoTag"] });
+}
+
+async function injectContentScript() {
+    await browser.tabs.executeScript({ file: "../../builds/contentScript.min.js" });
 }

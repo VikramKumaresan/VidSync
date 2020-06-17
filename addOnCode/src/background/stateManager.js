@@ -10,8 +10,6 @@
  * 
 */
 
-import tags from '../tags';
-
 export default class StateManager {
     //      Instance Attributes
     //  isError;
