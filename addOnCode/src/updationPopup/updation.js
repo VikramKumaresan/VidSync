@@ -78,8 +78,7 @@ async function getVideoUrl() {
 }
 
 async function loadContentScriptIfNeeded(tabId) {
-    const isLoaded = await isContentScriptLoaded(tabId);
-    if (!isLoaded) {
+    if (! await isContentScriptLoaded(tabId)) {
         await injectContentScript();
     }
 }

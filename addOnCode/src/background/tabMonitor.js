@@ -26,12 +26,12 @@ export default class TabMonitor {
 
         this.onTabUrlChangedListener = (changedTabId, changeInfo, tab) => {
             if (this.currentTabUrl != tab.url) {
-                mainManagerInstance.releaseInstances();
+                this.mainManagerInstance.releaseInstances();
             }
         };
         this.onTabRemovedListener = (changedTabId) => {
             if (changedTabId == this.currentTabId) {
-                mainManagerInstance.releaseInstances();
+                this.mainManagerInstance.releaseInstances();
             }
         };
 
