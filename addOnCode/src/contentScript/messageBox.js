@@ -13,7 +13,7 @@ export default class MessageBox {
     createAndInjectMessageBox() {
         const messageBox = document.createElement("div");
         messageBox.id = "messageBox";
-        messageBox.style = "background-color: #e0e094; width: 15vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out; opacity: 0; z-index:9999";
+        messageBox.style = "background-color: #e0e094; max-width: 20vw; display: inline-block; position: fixed; bottom: 2vh;  right: 2vw; overflow: auto; border-radius: 0.25em; transition: opacity 0.5s ease-in-out; opacity: 0; z-index:9999";
         messageBox.innerHTML = "<p id='message' style='margin:1em; font-size: 15px;'>Hello!</p>";
         document.body.appendChild(messageBox);
 
