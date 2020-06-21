@@ -67,14 +67,11 @@ async function getVideoUrl() {
 
     if (!result["result"]) {
         popUpManagerInstance.showMessage(result["tag"]);
+        return;
     }
-    else if (result["tag"] == tags["popUpContent"]["reloadPopUp"]) {
-        location.reload();
-    }
-    else {
-        videoUrl = result["url"];
-        popUpManagerInstance.attachUpdateButtonListener();
-    }
+
+    videoUrl = result["url"];
+    popUpManagerInstance.attachUpdateButtonListener();
 }
 
 async function loadContentScriptIfNeeded(tabId) {

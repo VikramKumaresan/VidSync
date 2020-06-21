@@ -6,12 +6,11 @@ export default {
     },
     //  PopUp <--> Content Script
     "popUpContent": {
-        "videoTag": 2,
-        "reloadPopUp": 3
+        "videoTag": 2
     },
     //  Content <--> Background
     "contentBackground": {
-        "windowClose": 4
+        "windowClose": 3
     },
     "socketServerTags": {
         "update": "update",
