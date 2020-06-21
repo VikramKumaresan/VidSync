@@ -50,6 +50,9 @@ browser.runtime.onMessage.addListener((data) => {
 });
 
 function sendUpdateDataToBackground() {
+    if (!popUpManagerInstance.getName())
+        return;
+
     emitMessageToBackgroundScript({
         "tag": tags["popUpBackground"]["update"],
         "name": popUpManagerInstance.getName(),
