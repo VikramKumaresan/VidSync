@@ -84,6 +84,8 @@ export default class WebSocketManager {
             //  Check if server updation failed
             case tags["socketServerTags"]["update"]:
                 if (!data["message"]["isUpdate"]) {
+                    this.isCannotConnect = true;
+
                     this.setStateAndDisplayMessage(
                         appendToStateObject(tags["states"]["updationServerFailed"], data["message"]["videoSrc"])
                     );

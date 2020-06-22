@@ -5,61 +5,70 @@ class Participant {
     videoSrc;
     name;
     lastUpdatedPlaybackTime = null;
+    roomInstance;
 
     constructor(socket, roomInstance) {
         this.socket = socket;
         this.videoSrc = null;
         this.name = null;
+        this.roomInstance = roomInstance;
 
-        this.attachListeners(roomInstance)
+        this.attachOnCloseListener();
+        this.attachUpdateListener();
     }
 
-    attachListeners(roomInstance) {
-
-        //  If socket closes
+    attachOnCloseListener() {
         this.socket.on("close", () => {
-            roomInstance.removeParticipant(this)
+            this.roomInstance.removeParticipant(this)
         })
+    }
 
-        // If socket sends message
+    attachUpdateListener() {
+        this.socket.on("message", (message) => {
+            const messageObj = JSON.parse(message);
+
+            if (messageObj["tag"] != "update")
+                return;
+
+            this.name = messageObj["name"];
+            this.videoSrc = messageObj["videoSrc"];
+            const result = this.roomInstance.updateParticipant(this);
+
+            this.socket.send(createResponse("update", result));
+
+            if (result["isUpdate"])
+                this.attachOperationListeners();
+            else
+                this.socket.close();
+        })
+    }
+
+    attachOperationListeners() {
+
         this.socket.on("message", (message) => {
             const messageObj = JSON.parse(message);
 
             switch (messageObj["tag"]) {
 
-                //  Participant detail updation
-                case "update":
-                    this.name = messageObj["name"];
-                    this.videoSrc = messageObj["videoSrc"];
-                    const result = roomInstance.updateParticipant(this);
-
-                    //  Send updation status to socket
-                    this.socket.send(createResponse("update", result));
-                    break;
-
-                //  Participant seek
                 case "seek":
-                    roomInstance.synchronizeSeek(this, messageObj["seekTo"]);
+                    this.roomInstance.synchronizeSeek(this, messageObj["seekTo"]);
                     break;
 
-                //  Participant pause
                 case "pause":
-                    roomInstance.synchronizePause(this);
+                    this.roomInstance.synchronizePause(this);
                     break;
 
-                //  Participant play
                 case "play":
-                    roomInstance.synchronizePlay(this);
+                    this.roomInstance.synchronizePlay(this);
                     break;
 
-                //  Leader currentTime for sync with new participant
                 case "getTime":
-                    roomInstance.syncAllNewJoin(messageObj["currentTime"]);
+                    this.roomInstance.syncAllNewJoin(messageObj["currentTime"]);
                     break;
 
                 //  Leader currentTime for auto sync
                 case "getTimeAutoSync":
-                    roomInstance.syncAll(messageObj["currentTime"]);
+                    this.roomInstance.syncAll(messageObj["currentTime"]);
                     break;
 
                 //  CurrentTime for auto update
@@ -68,9 +77,7 @@ class Participant {
                     break;
 
             }
-
         })
-
     }
 
 }
