@@ -38,7 +38,7 @@ export default {
             "message": "Connecting to server...",
             "isError": false
         },
-        "connectionOpen": {
+        "syncing": {
             "message": "Connected and syncing!",
             "isError": false
         },

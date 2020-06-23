@@ -75,8 +75,6 @@ export default class WebSocketManager {
             "videoSrc": this.videoSrc
         }
         this.sendMessageToServer(message);
-
-        this.setStateAndDisplayMessage(tags["states"]["connectionOpen"]);
     }
     onMessageListener(data) {
         switch (data["tag"]) {
@@ -89,7 +87,9 @@ export default class WebSocketManager {
                     this.setStateAndDisplayMessage(
                         appendToStateObject(tags["states"]["updationServerFailed"], data["message"]["videoSrc"])
                     );
+                    return;
                 }
+                this.setStateAndDisplayMessage(tags["states"]["syncing"]);
                 break;
 
             case tags["socketServerTags"]["pause"]:
