@@ -33,10 +33,8 @@ export default class WebSocketManager {
     }
 
     connectToSocketServer() {
-        //  Open socket connection
         this.socket = new WebSocket(config["socketServerUrl"]);
 
-        //  Attach listeners
         this.socket.onerror = () => { this.onErrorListener(); }
         this.socket.onclose = () => { this.onCloseListener(); }
         this.socket.onopen = () => { this.onOpenListener(); }
@@ -64,7 +62,6 @@ export default class WebSocketManager {
             return;
         }
 
-        //  Connection to server closed
         this.setStateAndDisplayMessage(tags["states"]["connectionClose"]);
     }
     onOpenListener() {
@@ -79,7 +76,6 @@ export default class WebSocketManager {
     onMessageListener(data) {
         switch (data["tag"]) {
 
-            //  Check if server updation failed
             case tags["socketServerTags"]["update"]:
                 if (!data["message"]["isUpdate"]) {
                     this.isCannotConnect = true;
@@ -127,10 +123,14 @@ export default class WebSocketManager {
     setStateAndDisplayMessage(stateObject) {
         this.mainManagerInstance.stateManagerInstance.setState(stateObject);
 
-        emitMessageToPopUpScript({ "tag": tags["states"]["stateTag"], "stateObj": stateObject });
         emitToContentScriptInTab(
             this.mainManagerInstance.tabMonitorInstance.getTabId(),
             { "tag": tags["states"]["stateTag"], "stateObj": stateObject }
         );
+
+        try {
+            //  Pop Up could be closed
+            emitMessageToPopUpScript({ "tag": tags["states"]["stateTag"], "stateObj": stateObject });
+        } catch (e) { }
     }
 }

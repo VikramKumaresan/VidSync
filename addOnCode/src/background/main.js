@@ -48,6 +48,7 @@ browser.runtime.onMessage.addListener((data) => {
 
             mainManagerInstance = new MainManager(stateManagerInstance, data["name"], data["url"],);
             stateManagerInstance.setState(tags["states"]["connectingServer"]);
+            break;
 
         //  Synchronize calls from content script
         case tags["socketServerTags"]["pause"]:

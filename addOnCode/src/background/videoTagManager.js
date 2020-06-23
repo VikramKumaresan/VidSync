@@ -25,7 +25,6 @@ export default class VideoTagManager {
         this.currentTabId = currentTab.id;
     }
 
-    //  Video operation calls
     pauseVideo(name) {
         emitToContentScriptInTab(this.currentTabId, this.createMessageObject(tags["socketServerTags"]["pause"], "", name));
     }

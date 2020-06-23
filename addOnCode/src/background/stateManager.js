@@ -23,7 +23,7 @@ export default class StateManager {
         const returnIsError = this.isError;
         const returnMessage = this.message;
 
-        //  Refresh state once error has been displayed [This method is called before displaying]
+        //  Display -> Refresh
         if (this.isError) {
             this.refreshState();
         }
